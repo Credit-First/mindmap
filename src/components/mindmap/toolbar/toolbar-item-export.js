@@ -2,7 +2,7 @@ import cx from "classnames";
 import { iconClassName } from "@blink-mind/renderer-react";
 import { Menu, MenuDivider, MenuItem, Popover } from "@blueprintjs/core";
 import React from "react";
-import { downloadFile } from "../../utils";
+import { downloadFile } from "../../../utils";
 
 export function ToolbarItemExport(props) {
   const onClickExportJson = e => {

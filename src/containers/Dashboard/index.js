@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
     Box,
     Grid,
@@ -49,7 +49,6 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         boxShadow: 'none',
         borderRadius: 15,
-        padding: 2,
         fontSize: 11,
         margin: 3,
         flexGrow: 1,
@@ -62,19 +61,22 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const Dashboard = () => {
+const Dashboard = (props) => {
     const classes = useStyles();
+    const { type } = props;
+    const location = useLocation();
+    const currentPath = location.pathname;
 
     return (
         <Box component="main" className={classNames(classes.root, '')}>
             <div className={classNames(classes.drawerHeader)} />
-            <Grid container columns={{ xs: 2, sm: 6, md: 12 }}>
-                <Grid item xs={2} sm={2} md={2}>
+            <Grid container spacing={1} style={{ cursor: 'pointer' }}>
+                <Grid item xs={12} xl={6} sm={3} md={2} style={{ ...((currentPath !== '/dashboard') && { display: 'none' }) }}>
                     <div className={classNames(classes.Item, '')}>
                         <CustomizedMenus />
                     </div>
                 </Grid>
-                <Grid item xs={2} sm={2} md={2}>
+                <Grid item xs={12} xl={6} sm={3} md={2}>
                     <div className={classNames(classes.Item, '')}>
                         <div style={{}}>
                             <svg height={50} viewBox="0 0 80 60"><g fill="none" fillRule="evenodd" transform="translate(7 8)"><path stroke="#96DB0B" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.467" d="M34.835 13.193l.615-2.955A7.333 7.333 0 0 1 42.63 4.4h11.637"></path><path stroke="#FA0" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.467" d="M34.842 30.844l.608 2.918a7.333 7.333 0 0 0 7.18 5.838h11.637"></path><path stroke="#2BD9D9" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.467" d="M31.518 13.11l-.43-2.582A7.333 7.333 0 0 0 23.854 4.4H12.467"></path><path stroke="#D01F2E" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.467" d="M31.493 31.044l-.405 2.428a7.333 7.333 0 0 1-7.234 6.128H12.467"></path><path stroke="#FFD426" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.467" d="M42.088 22H63.8"></path><path stroke="#A179F2" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.467" d="M2.2 22h21"></path><rect width="10" height="4" x="28" y="20" fill="#3D474D" rx="2"></rect><rect width="15" height="8.8" x="41.8" fill="#96DB0B" rx="4.4"></rect><rect width="15" height="9" x="10" fill="#2BD9D9" rx="4.5"></rect><rect width="15" height="9" x="51.333" y="17.6" fill="#FFD426" rx="4.5"></rect><rect width="15" height="9" y="17.6" fill="#A179F2" rx="4.5"></rect><rect width="14.667" height="8.8" x="41.8" y="35.2" fill="#FA0" rx="4.4"></rect><rect width="15" height="9" x="9" y="35" fill="#D01F2E" rx="4.5"></rect></g></svg>
@@ -82,7 +84,7 @@ const Dashboard = () => {
                         <div>Mind Map</div>
                     </div>
                 </Grid>
-                <Grid item xs={2} sm={2} md={2}>
+                <Grid item xs={12} xl={6} sm={3} md={2}>
                     <div className={classNames(classes.Item, '')}>
                         <div style={{}}>
                             <svg height={50} viewBox="0 0 80 60"><g fill="none" fillRule="evenodd"><g stroke="#B2BBC0" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.47"><path d="M40 14v6H22a5 5 0 0 0-5 5v3m23-14v6h18a5 5 0 0 1 5 5v3M40 14v14"></path></g><path fill="#FFD426" d="M35.564 26h8.872c.892 0 1.215.093 1.54.267.327.174.583.43.757.756.174.326.267.65.267 1.54v1.873c0 .892-.093 1.215-.267 1.54-.174.327-.43.583-.756.757-.326.174-.65.267-1.54.267h-8.873c-.892 0-1.215-.093-1.54-.267a1.817 1.817 0 0 1-.757-.756c-.174-.326-.267-.65-.267-1.54v-1.873c0-.892.093-1.215.267-1.54.174-.327.43-.583.756-.757.326-.174.65-.267 1.54-.267z"></path><path fill="#FA0" d="M58.564 26h8.872c.892 0 1.215.093 1.54.267.327.174.583.43.757.756.174.326.267.65.267 1.54v1.873c0 .892-.093 1.215-.267 1.54-.174.327-.43.583-.756.757-.326.174-.65.267-1.54.267h-8.873c-.892 0-1.215-.093-1.54-.267a1.817 1.817 0 0 1-.757-.756c-.174-.326-.267-.65-.267-1.54v-1.873c0-.892.093-1.215.267-1.54.174-.327.43-.583.756-.757.326-.174.65-.267 1.54-.267z"></path><path fill="#96DB0B" d="M12.564 26h8.872c.892 0 1.215.093 1.54.267.327.174.583.43.757.756.174.326.267.65.267 1.54v1.873c0 .892-.093 1.215-.267 1.54-.174.327-.43.583-.756.757-.326.174-.65.267-1.54.267h-8.873c-.892 0-1.215-.093-1.54-.267a1.817 1.817 0 0 1-.757-.756c-.174-.326-.267-.65-.267-1.54v-1.873c0-.892.093-1.215.267-1.54.174-.327.43-.583.756-.757.326-.174.65-.267 1.54-.267z"></path><path fill="#FFD426" d="M35.564 35h8.872c.892 0 1.215.093 1.54.267.327.174.583.43.757.756.174.326.267.65.267 1.54v1.873c0 .892-.093 1.215-.267 1.54-.174.327-.43.583-.756.757-.326.174-.65.267-1.54.267h-8.873c-.892 0-1.215-.093-1.54-.267a1.817 1.817 0 0 1-.757-.756c-.174-.326-.267-.65-.267-1.54v-1.873c0-.892.093-1.215.267-1.54.174-.327.43-.583.756-.757.326-.174.65-.267 1.54-.267z"></path><path fill="#3D474D" d="M35.564 7h8.872c.892 0 1.215.093 1.54.267.327.174.583.43.757.756.174.326.267.65.267 1.54v1.873c0 .892-.093 1.215-.267 1.54-.174.327-.43.583-.756.757-.326.174-.65.267-1.54.267h-8.873c-.892 0-1.215-.093-1.54-.267a1.817 1.817 0 0 1-.757-.756c-.174-.326-.267-.65-.267-1.54V9.563c0-.892.093-1.215.267-1.54.174-.327.43-.583.756-.757.326-.174.65-.267 1.54-.267z"></path><path fill="#FA0" d="M58.564 35h8.872c.892 0 1.215.093 1.54.267.327.174.583.43.757.756.174.326.267.65.267 1.54v1.873c0 .892-.093 1.215-.267 1.54-.174.327-.43.583-.756.757-.326.174-.65.267-1.54.267h-8.873c-.892 0-1.215-.093-1.54-.267a1.817 1.817 0 0 1-.757-.756c-.174-.326-.267-.65-.267-1.54v-1.873c0-.892.093-1.215.267-1.54.174-.327.43-.583.756-.757.326-.174.65-.267 1.54-.267z"></path><path fill="#96DB0B" d="M12.564 35h8.872c.892 0 1.215.093 1.54.267.327.174.583.43.757.756.174.326.267.65.267 1.54v1.873c0 .892-.093 1.215-.267 1.54-.174.327-.43.583-.756.757-.326.174-.65.267-1.54.267h-8.873c-.892 0-1.215-.093-1.54-.267a1.817 1.817 0 0 1-.757-.756c-.174-.326-.267-.65-.267-1.54v-1.873c0-.892.093-1.215.267-1.54.174-.327.43-.583.756-.757.326-.174.65-.267 1.54-.267z"></path><path fill="#FFD426" d="M35.564 44h8.872c.892 0 1.215.093 1.54.267.327.174.583.43.757.756.174.326.267.65.267 1.54v1.873c0 .892-.093 1.215-.267 1.54-.174.327-.43.583-.756.757-.326.174-.65.267-1.54.267h-8.873c-.892 0-1.215-.093-1.54-.267a1.817 1.817 0 0 1-.757-.756c-.174-.326-.267-.65-.267-1.54v-1.873c0-.892.093-1.215.267-1.54.174-.327.43-.583.756-.757.326-.174.65-.267 1.54-.267z"></path><path fill="#FA0" d="M58.564 44h8.872c.892 0 1.215.093 1.54.267.327.174.583.43.757.756.174.326.267.65.267 1.54v1.873c0 .892-.093 1.215-.267 1.54-.174.327-.43.583-.756.757-.326.174-.65.267-1.54.267h-8.873c-.892 0-1.215-.093-1.54-.267a1.817 1.817 0 0 1-.757-.756c-.174-.326-.267-.65-.267-1.54v-1.873c0-.892.093-1.215.267-1.54.174-.327.43-.583.756-.757.326-.174.65-.267 1.54-.267z"></path><path fill="#96DB0B" d="M12.564 44h8.872c.892 0 1.215.093 1.54.267.327.174.583.43.757.756.174.326.267.65.267 1.54v1.873c0 .892-.093 1.215-.267 1.54-.174.327-.43.583-.756.757-.326.174-.65.267-1.54.267h-8.873c-.892 0-1.215-.093-1.54-.267a1.817 1.817 0 0 1-.757-.756c-.174-.326-.267-.65-.267-1.54v-1.873c0-.892.093-1.215.267-1.54.174-.327.43-.583.756-.757.326-.174.65-.267 1.54-.267z"></path></g></svg>
@@ -90,7 +92,7 @@ const Dashboard = () => {
                         <div>Org Chart</div>
                     </div>
                 </Grid>
-                <Grid item xs={2} sm={2} md={2}>
+                <Grid item xs={12} xl={6} sm={3} md={2}>
                     <div className={classNames(classes.Item, '')}>
                         <div style={{}}>
                             <svg height={50} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 60">
@@ -109,7 +111,7 @@ const Dashboard = () => {
                         <div>Project Retrospective</div>
                     </div>
                 </Grid>
-                <Grid item xs={2} sm={2} md={2}>
+                <Grid item xs={12} xl={6} sm={3} md={2}>
                     <div className={classNames(classes.Item, '')}>
                         <div style={{}}>
                             <svg height={50} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 60">
@@ -133,7 +135,7 @@ const Dashboard = () => {
                         <div>Product Launch</div>
                     </div>
                 </Grid>
-                <Grid item xs={2} sm={2} md={2}>
+                <Grid item xs={12} xl={6} sm={3} md={2}>
                     <div className={classNames(classes.Item, '')}>
                         <div style={{}}>
                             <svg height={50} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 60">

@@ -9,6 +9,7 @@ import Account from "../containers/Account";
 import Settings from "../containers/Account/Settings";
 import Login from "../components/auth/Login";
 import Register from "../components/auth/Register";
+import NotReady from 'containers/NotReady';
 
 export const routes = [
   { path: '/login', name: 'Login', key: 'login', icon: '', element: <Login /> },
@@ -18,6 +19,7 @@ export const routes = [
     name: '', key: '', icon: '',
     element: <Layout />,
     children: [
+      { path: '/', name: 'My Map', key: 'mymap', icon: '', element: <Dashboard /> },
       { path: '/dashboard', name: 'My Map', key: 'mymap', icon: '', element: <Dashboard /> },
       { path: '/recent', name: 'Recent', key: 'recent', icon: '', element: <Dashboard /> },
       { path: '/public', name: 'Public', key: 'public', icon: '', element: <Dashboard /> },
@@ -33,7 +35,8 @@ export const routes = [
       { path: '/account/me', name: 'Me', key: 'me', icon: '', element: <Account /> },
       { path: '/account/settings', name: 'Settings', key: 'settings', icon: '', element: <Settings /> },
     ]
-  }
+  },
+  { path: '*', name: 'ErrorPage', key: 'error_page', icon: '', element: <NotReady /> },
 ]
 
 const Element = () => {

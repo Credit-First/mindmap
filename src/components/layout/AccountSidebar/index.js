@@ -67,6 +67,7 @@ const AppBar = styled(MaterialAppBar, {
         duration: theme.transitions.duration.leavingScreen,
     }),
     left: `calc(${theme.spacing(7)}px + 1px)`,
+    width: `calc(100vw - ${theme.spacing(7)}px - 1px)`,
     ...(open && {
         marginLeft: drawerWidth,
         left: 0,

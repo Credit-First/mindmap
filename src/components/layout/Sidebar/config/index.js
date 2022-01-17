@@ -16,8 +16,6 @@ import LanguageIcon from '@material-ui/icons/Language';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import { withStyles } from '@material-ui/styles';
 
-const defaultProps = {};
-
 const styles = (theme) => ({
     root: {
         minHeight: 48,
@@ -86,7 +84,6 @@ const data = [
 
 function CustomizedList({ classes, open }) {
     const location = useLocation();
-    const navigate = useNavigate();
 
     return (
         <Box >

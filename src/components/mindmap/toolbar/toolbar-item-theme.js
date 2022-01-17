@@ -1,8 +1,8 @@
-import defaultThemeImg from "../../images/default.jpg";
-import theme1Img from "../../images/theme1.jpg";
-import theme2Img from "../../images/theme2.jpg";
-import theme3Img from "../../images/theme3.jpg";
-import theme4Img from "../../images/theme4.jpg";
+import defaultThemeImg from "../../../images/default.jpg";
+import theme1Img from "../../../images/theme1.jpg";
+import theme2Img from "../../../images/theme2.jpg";
+import theme3Img from "../../../images/theme3.jpg";
+import theme4Img from "../../../images/theme4.jpg";
 import cx from "classnames";
 import { iconClassName } from "@blink-mind/renderer-react";
 import { Popover } from "@blueprintjs/core";

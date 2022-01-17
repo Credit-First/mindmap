@@ -1,6 +1,7 @@
 .mindmap {
   width: 100vw;
-  height: calc(100vh - 36px);
+  /* height: calc(100vh - 36px); */
+  height: 100vh;
 }
 
 #root {

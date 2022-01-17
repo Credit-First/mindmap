@@ -134,9 +134,9 @@ export default function SignInSide(props) {
   const { errors } = formState;
 
   function onSubmit(data) {
-    // dispatch(actionLogin(data));
+    dispatch(actionLogin(data));
     // recaptcha.reset();
-    sendRecaptcha();
+    // sendRecaptcha();
   }
 
   function sendRecaptcha() {
