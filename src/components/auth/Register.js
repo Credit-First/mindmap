@@ -17,10 +17,11 @@ import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-
+import { actionRegister } from 'store/actions';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -85,6 +86,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignUp(props) {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
   const formRef = useRef();
@@ -97,7 +99,7 @@ export default function SignUp(props) {
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
   const validationSchema = Yup.object().shape({
-    name: Yup.string()
+    displayName: Yup.string()
       .required('First Name is required'),
     email: Yup.string()
       .required('Email is required')
@@ -114,7 +116,7 @@ export default function SignUp(props) {
   const { register, handleSubmit, formState } = useForm(formOptions);
   const { errors } = formState;
   function onSubmit(data) {
-    props.registerRequest(data);
+    dispatch(actionRegister(data));
     return false;
   }
 
@@ -136,10 +138,10 @@ export default function SignUp(props) {
               </InputAdornment>
             ),
           }}
-          {...register('email')}
+          {...register('displayName')}
           variant="outlined"
-          error={errors.name ? true : false}
-          helperText={errors.name?.message}
+          error={errors.displayName ? true : false}
+          helperText={errors.displayName?.message}
           color='secondary'
           style={{ marginTop: '0px' }}
         />
@@ -241,7 +243,7 @@ export default function SignUp(props) {
   return (
       <>
         <div component="nav" className={classes.nav}>
-        <a className='logo' href='https://www.mindmeister.com' title='Mindmeister'>
+        <a className='logo' href='' title='Mindmeister'>
           <img src='assets/images/logo/logo.svg' alt='Mindmerster Logo' />
         </a>
         <div id='show-signup' className={classes.showSignup}>

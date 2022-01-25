@@ -1042,6 +1042,13 @@ function OperationPlugin() {
             controller.run('setRedoStack', __assign(__assign({}, props), { redoStack: redoStack.shift() }));
             controller.change(newModel);
         },
+        add: function (props) {
+            var topicKey = props.topicKey, model = props.model, controller = props.controller;
+            if (topicKey === undefined) {
+                props = __assign(__assign({}, props), { topicKey: model.focusKey });
+            }
+            controller.run('operation', __assign(__assign({}, props), { opType: OpType.ADD_CHILD }));
+        },
         //TODO 有空重构这个函数
         operation: function (props) {
             var controller = props.controller, opType = props.opType, model = props.model, opArray = props.opArray, callback = props.callback;
@@ -2200,7 +2207,7 @@ var TopicWidget = /** @class */ (function (_super) {
 var templateObject_1$e, templateObject_2$8, templateObject_3$3;
 
 var log$d = debug('node:view-port-viewer');
-var ViewerRoot = styled(ZIndex)(templateObject_1$f || (templateObject_1$f = __makeTemplateObject(["\n  position: absolute;\n  background: white;\n  right: 30px;\n  bottom: 20px;\n  border-radius: 2px;\n  display: flex;\n  flex-direction: row;\n  user-select: none;\n border-radius: 50px;\n padding: 5px;\n box-shadow: rgb(185 185 185) 0px 0px 9px 0px;\n"], ["\n  position: absolute;\n  background: white;\n  right: 30px;\n  bottom: 20px;\n  border-radius: 2px;\n  display: flex;\n  flex-direction: row;\n  user-select: none;\n border-radius: 50px;\n padding: 5px;\n box-shadow: rgb(185 185 185) 0px 0px 9px 0px;\n"])));
+var ViewerRoot = styled(ZIndex)(templateObject_1$f || (templateObject_1$f = __makeTemplateObject(["\n  position: absolute;\n  background: white;\n  left: 30px;\n  bottom: 20px;\n  border-radius: 2px;\n  display: flex;\n  flex-direction: row;\n  user-select: none;\n border-radius: 50px;\n padding: 5px;\n box-shadow: rgb(185 185 185) 0px 0px 9px 0px;\n"], ["\n  position: absolute;\n  background: white;\n  right: 30px;\n  bottom: 20px;\n  border-radius: 2px;\n  display: flex;\n  flex-direction: row;\n  user-select: none;\n border-radius: 50px;\n padding: 5px;\n box-shadow: rgb(185 185 185) 0px 0px 9px 0px;\n"])));
 var Item_ = styled(Btn)(templateObject_2$9 || (templateObject_2$9 = __makeTemplateObject(["\n  margin: 10px;\n"], ["\n  margin: 10px;\n"])));
 var ZoomFactorSpan = styled.span(templateObject_3$4 || (templateObject_3$4 = __makeTemplateObject(["\n  display: inline-block;\n  width: 80px;\n  height: 18px;\n"], ["\n  display: inline-block;\n  width: 80px;\n  height: 18px;\n"])));
 var Item = function (props) {

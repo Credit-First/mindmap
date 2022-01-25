@@ -15,8 +15,6 @@ import {
     AppBar as MaterialAppBar,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 import AccountSideBarList from './config';
 import { routes } from '../../../setup/routes';

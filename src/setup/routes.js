@@ -3,6 +3,7 @@ import { useRoutes } from "react-router-dom";
 import ProgressBar from "./progressbar";
 import Layout from "../containers/Layout";
 import AccountLayout from "../containers/Layout/account";
+import Home from "../containers/Home";
 import Dashboard from "../containers/Dashboard";
 import MindMap from "../containers/MindMap";
 import Account from "../containers/Account";
@@ -14,17 +15,18 @@ import NotReady from 'containers/NotReady';
 export const routes = [
   { path: '/login', name: 'Login', key: 'login', icon: '', element: <Login /> },
   { path: '/register', element: <Register /> },
+  { path: '/home', name: 'Home', key: 'home', icon: '', element: <Home /> },
   {
     path: '/',
     name: '', key: '', icon: '',
     element: <Layout />,
     children: [
-      { path: '/', name: 'My Map', key: 'mymap', icon: '', element: <Dashboard /> },
-      { path: '/dashboard', name: 'My Map', key: 'mymap', icon: '', element: <Dashboard /> },
-      { path: '/recent', name: 'Recent', key: 'recent', icon: '', element: <Dashboard /> },
-      { path: '/public', name: 'Public', key: 'public', icon: '', element: <Dashboard /> },
-      { path: '/favorites', name: 'Favorites', key: 'favorite', icon: '', element: <Dashboard /> },
-      { path: '/trash', name: 'Trash', key: 'trash', icon: '', element: <Dashboard /> },
+      { path: '/', name: 'My Maps', key: 'mymap', icon: '', element: <Dashboard /> },
+      { path: '/dashboard', name: 'My Maps', key: 'mymap', icon: '', element: <Dashboard /> },
+      { path: '/recent', name: 'Recent Maps', key: 'recent', icon: '', element: <Dashboard /> },
+      { path: '/public', name: 'Public Maps', key: 'public', icon: '', element: <Dashboard /> },
+      { path: '/favorites', name: 'Favorites Maps', key: 'favorite', icon: '', element: <Dashboard /> },
+      { path: '/trash', name: 'Trashed Maps', key: 'trash', icon: '', element: <Dashboard /> },
     ]
   },
   { path: '/mindmap', name: 'MindMap', key: 'mindmap', icon: '', element: <MindMap /> },

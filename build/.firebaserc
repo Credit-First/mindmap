@@ -1,0 +1,9 @@
+{
+  "projects": {
+<<<<<<< Updated upstream
+    "default": "mindmap-web"
+=======
+    "default": "mindmap-100"
+>>>>>>> Stashed changes
+  }
+}

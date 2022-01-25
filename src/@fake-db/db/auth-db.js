@@ -165,51 +165,52 @@ mock.onGet('/api/auth/access-token').reply((config) => {
     }
 });
 
-// mock.onPost('/api/auth/register').reply((request) => {
-//     const data = JSON.parse(request.data);
-//     const { displayName, password, email } = data;
-//     const isEmailExists = authDB.users.find(_user => _user.data.email === email);
-//     const error = {
-//         email: isEmailExists ? 'The email is already in use' : null,
-//         displayName: displayName !== '' ? null : 'Enter display name',
-//         password: null
-//     };
-//     if (!error.displayName && !error.password && !error.email) {
-//         const newUser = {
-//             uuid: generateGUID(),
-//             from: 'custom-db',
-//             password: password,
-//             role: "admin",
-//             data: {
-//                 displayName: displayName,
-//                 photoURL: 'assets/images/avatars/Abbott.jpg',
-//                 email: email,
-//                 settings: {},
-//                 shortcuts: []
-//             }
-//         };
+mock.onPost('/api/auth/register').reply((request) => {
+    const data = JSON.parse(request.data);
+    const { displayName, password, email } = data;
+    const isEmailExists = authDB.users.find(_user => _user.data.email === email);
+    const error = {
+        email: isEmailExists ? 'The email is already in use' : null,
+        displayName: displayName !== '' ? null : 'Enter display name',
+        password: null
+    };
+    if (!error.displayName && !error.password && !error.email) {
+        const newUser = {
+            uuid: generateGUID(),
+            from: 'custom-db',
+            password: password,
+            role: "admin",
+            data: {
+                displayName: displayName,
+                photoURL: 'assets/images/avatars/Abbott.jpg',
+                email: email,
+                settings: {},
+                shortcuts: []
+            }
+        };
 
-//         authDB.users = [
-//             ...authDB.users,
-//             newUser
-//         ];
+        authDB.users = [
+            ...authDB.users,
+            newUser
+        ];
 
-//         const user = _.cloneDeep(newUser);
-//         delete user['password'];
+        const user = _.cloneDeep(newUser);
+        delete user['password'];
+        
+        // const access_token = jwt.sign({ id: user.uuid }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn });
+        const access_token = JSON.stringify({ id: user.uuid });
 
-//         const access_token = jwt.sign({ id: user.uuid }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn });
+        const response = {
+            "user": user,
+            "access_token": access_token
+        };
 
-//         const response = {
-//             "user": user,
-//             "access_token": access_token
-//         };
-
-//         return [200, response];
-//     }
-//     else {
-//         return [200, { error }];
-//     }
-// });
+        return [200, response];
+    }
+    else {
+        return [200, { error }];
+    }
+});
 
 // mock.onPost('/api/auth/user/update').reply((config) => {
 //     const data = JSON.parse(config.data);

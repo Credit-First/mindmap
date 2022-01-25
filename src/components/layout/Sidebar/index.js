@@ -2,10 +2,11 @@ import * as React from 'react';
 import clsx from 'clsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { styled, useTheme } from '@material-ui/core/styles';
+import { styled, useTheme, alpha, makeStyles } from '@material-ui/core/styles';
 import {
   Box,
   Toolbar,
+  Button,
   CssBaseline,
   Typography,
   IconButton,
@@ -16,6 +17,7 @@ import {
   Divider,
   Tooltip,
   ListItemText,
+  InputBase,
   Drawer as MaterialDrawer,
   AppBar as MaterialAppBar,
 } from '@material-ui/core';
@@ -30,11 +32,14 @@ import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import AppsIcon from '@material-ui/icons/Apps';
+import ListIcon from '@material-ui/icons/List';
 
 import SideBarList from './config';
 import { routes } from '../../../setup/routes';
-import { actionLogout } from 'store/actions';
-import { selectAuthItem } from 'store/selectors';
+import { actionLogout, actionSetSortType, actionSetUpgradeType } from 'store/actions';
+import { selectAuthItem, selectSortType, selectUpgradeType } from 'store/selectors';
 
 const drawerWidth = 240;
 
@@ -111,7 +116,6 @@ export default function SideBar(props) {
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
-
   const location = useLocation();
 
   function search(routes, path) {
@@ -197,18 +201,107 @@ export default function SideBar(props) {
         </DrawerHeader>
         <SideBarList open={open} />
       </Drawer>
-        {props.children}
+      {props.children}
     </Box>
   );
 }
 
+function SortMenu() {
+  const dispatch = useDispatch();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleChange = (type) => () => {
+    dispatch(actionSetSortType(type));
+  }
+  return (
+    <React.Fragment>
+      <Box style={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+        <div style={{ minWidth: 30 }}>
+          <Tooltip title='sort'>
+            <IconButton
+              onClick={handleClick}
+              size="small"
+              style={{ ml: 2 }}
+              aria-controls={open ? 'sort-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? 'true' : undefined}
+            >
+              <MoreHorizIcon />
+            </IconButton>
+          </Tooltip>
+        </div>
+      </Box>
+      <Menu
+        anchorEl={anchorEl}
+        getContentAnchorEl={null}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        id="sort-menu"
+        open={open}
+        onClose={handleClose}
+        onClick={handleClose}
+        PaperProps={{
+          elevation: 0,
+          style: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            borderRadius: 10,
+            marginTop: 1,
+            '&:before': {
+              content: '""',
+              display: 'block',
+              position: 'absolute',
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: 'background.paper',
+              transform: 'translateY(-50%) rotate(45deg)',
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        <MenuItem onClick={handleChange('grid')}>
+          <ListItemIcon>
+            <AppsIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary='Grid' />
+        </MenuItem>
+        <MenuItem onClick={handleChange('list')}>
+          <ListItemIcon>
+            <ListIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary='List' />
+        </MenuItem>
+      </Menu>
+    </React.Fragment >
+  );
+}
 function AccountMenu() {
   const selectAuth = useSelector(selectAuthItem('currentUser'));
+  const upgradeState = useSelector(selectUpgradeType);
   const currentUser = selectAuth.data;
+  const { pathname } = useLocation();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
+
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -219,24 +312,43 @@ function AccountMenu() {
   const handleLogout = () => {
     dispatch(actionLogout());
   }
+  
+  const handleUpgrade = () => {
+    dispatch(actionSetUpgradeType(!upgradeState));
+  }
+
+
   return (
     <React.Fragment>
       <Box style={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        <Typography style={{ minWidth: 30 }}>
-          <IconButton>
-            <MoreHorizIcon />
-          </IconButton>
-        </Typography>
-        <Typography style={{ minWidth: 30 }}>
-          <IconButton>
-            <SearchIcon />
-          </IconButton>
-        </Typography>
-        <Typography style={{ minWidth: 30 }}>
+        {
+          pathname == '/trash' && (
+            <div style={{ display: 'flex', minWidth: 30 }}>
+              <Button variant='contained' style={{ boxShadow: 'none', borderRadius: '50px', color: 'grey' }}>
+                Empty Trash
+              </Button>
+              <div style={{ width: '1px', height: '32px', backgroundColor: 'rgba(0, 0, 0, 0.1)', marginLeft: '25px', marginRight: '25px' }}></div>
+            </div>
+          )
+        }{
+          pathname == '/public' && (
+            <div style={{ display: 'flex', alignItems: 'center', minWidth: 30 }}>
+              <a href='' style={{ textDecoration: 'underline', color: '#2196f3' }}>Browse all Public Maps</a>
+              <div style={{ width: '1px', height: '32px', backgroundColor: 'rgba(0, 0, 0, 0.1)', marginLeft: '25px', marginRight: '25px' }}></div>
+            </div>
+          )
+        }
+        <div style={{ minWidth: 30 }}>
+          <SortMenu />
+        </div>
+        <div style={{ minWidth: 30 }}>
+          <SearchBtn />
+        </div>
+        <div style={{ minWidth: 30 }} onClick={handleUpgrade}>
           <IconButton>
             <NotificationsNoneIcon />
           </IconButton>
-        </Typography>
+        </div>
         <Tooltip title={currentUser.displayName}>
           <IconButton
             onClick={handleClick}
@@ -254,12 +366,12 @@ function AccountMenu() {
         anchorEl={anchorEl}
         getContentAnchorEl={null}
         anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right',
+          vertical: 'bottom',
+          horizontal: 'right',
         }}
         transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
+          vertical: 'top',
+          horizontal: 'right',
         }}
         id="account-menu"
         open={open}
@@ -346,4 +458,69 @@ function AccountMenu() {
       </Menu>
     </React.Fragment >
   );
+}
+
+function SearchBtn() {
+  const useStyles = makeStyles((theme) => ({
+    search: {
+      position: 'relative',
+      borderRadius: theme.shape.borderRadius,
+      backgroundColor: alpha(theme.palette.common.white, 0.15),
+      '&:hover': {
+        backgroundColor: alpha(theme.palette.common.white, 0.25),
+      },
+      marginLeft: 0,
+      width: 0,
+      [theme.breakpoints.up('sm')]: {
+        marginLeft: theme.spacing(1),
+        width: 'auto',
+      },
+    },
+    searchIcon: {
+      padding: theme.spacing(0, 2),
+      height: '100%',
+      position: 'absolute',
+      pointerEvents: 'none',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    inputRoot: {
+      color: 'inherit',
+    },
+    inputInput: {
+      padding: theme.spacing(1, 1, 1, 0),
+      // vertical padding + font size from searchIcon
+      paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+      transition: theme.transitions.create('width'),
+      width: '100%',
+      [theme.breakpoints.up('sm')]: {
+        width: '0',
+        borderRadius: 10,
+        '&:focus': {
+          border: '1px solid rgb(0 0 0 / 12%)',
+          borderRadius: 10,
+          width: '20ch',
+        },
+      },
+    },
+  }));
+
+  const classes = useStyles();
+
+  return (
+    <div className={classes.search}>
+      <div className={classes.searchIcon}>
+        <SearchIcon />
+      </div>
+      <InputBase
+        placeholder="Search…"
+        classes={{
+          root: classes.inputRoot,
+          input: classes.inputInput,
+        }}
+        inputProps={{ 'aria-label': 'search' }}
+      />
+    </div>
+  )
 }

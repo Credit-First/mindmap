@@ -1,8 +1,10 @@
 import { combineReducers } from "redux";
 import auth from "./auth";
+import layout from "./layout";
 
 const reducers = combineReducers({
-    auth
+    auth,
+    layout
 })
 
 export default reducers;

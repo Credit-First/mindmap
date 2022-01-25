@@ -60,22 +60,22 @@ class jwtService extends Emitter {
         }
     };
 
-    // createUser = (data) => {
-    //     return new Promise((resolve, reject) => {
-    //         axios.post('/api/auth/register', data)
-    //             .then(response => {
-    //                 if ( response.data.user )
-    //                 {
-    //                     this.setSession(response.data.access_token);
-    //                     resolve(response.data.user);
-    //                 }
-    //                 else
-    //                 {
-    //                     reject(response.data.error);
-    //                 }
-    //             });
-    //     });
-    // };
+    createUser = (data) => {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/auth/register', data)
+                .then(response => {
+                    if ( response.data.user )
+                    {
+                        this.setSession(response.data.access_token);
+                        resolve(response.data.user);
+                    }
+                    else
+                    {
+                        reject(response.data.error);
+                    }
+                });
+        });
+    };
 
     signInWithEmailAndPassword = (email, password) => {
         return new Promise((resolve, reject) => {

@@ -1,14 +1,18 @@
 import * as React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
   IconButton,
+  ListItemText,
   ListItemIcon,
   Avatar,
   Menu,
   MenuItem,
   Divider,
   Tooltip,
+  Typography,
   useMediaQuery
 } from '@material-ui/core';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -22,9 +26,14 @@ import PaletteOutlinedIcon from '@material-ui/icons/PaletteOutlined';
 import SearchIcon from '@material-ui/icons/Search';
 import UndoIcon from '@material-ui/icons/Undo';
 import RedoIcon from '@material-ui/icons/Redo';
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import SettingsIcon from '@material-ui/icons/Settings';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import SettingsIcon from '@material-ui/icons/Settings';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import FormatAlignJustifyIcon from '@material-ui/icons/FormatAlignJustify';
 import FormatAlignLeftIcon from '@material-ui/icons/FormatAlignLeft';
@@ -42,7 +51,9 @@ import { downloadFile } from "../../../utils";
 import { OpType } from "@blink-mind/core";
 import { FOCUS_MODE_SEARCH } from "@blink-mind/plugins";
 import { DiagramLayoutType } from "@blink-mind/core";
-import { Navigate, useNavigate } from 'react-router-dom';
+
+import { actionLogout } from 'store/actions';
+import { selectAuthItem } from 'store/selectors';
 
 const styles = {
   root: {
@@ -75,8 +86,15 @@ export default function TopBar(props) {
   }, [matches]);
 
   const { diagram, onClickUndo, onClickRedo } = props;
-  const diagramProps = diagram.getDiagramProps();
-  const { controller, model } = diagramProps;
+
+
+  const onClickAddChild = e => {
+    const { diagram } = props;
+    const diagramProps = diagram.getDiagramProps();
+    const { controller } = diagramProps;
+
+    controller.run("add", diagramProps);
+  };
 
   const onClickOpenFile = e => {
     const { diagram } = props;
@@ -134,8 +152,8 @@ export default function TopBar(props) {
         <Button variant="contained" color='primary' startIcon={<StarOutlineIcon />} style={{ borderRadius: '40px', boxShadow: 'none' }}>Uprade Now</Button>
       </Box>
       <Box style={{ display: 'flex', alignContent: 'center' }}>
-        <IconBtn title='Add' style={{ margin: '3px', marginRight: '10px', backgroundColor: '#ffa000', color: 'white', boxShadow: 'rgb(185 185 185) 0px 0px 9px 0px' }}>
-          <AddIcon />
+        <IconBtn title='Add'  onClick={onClickAddChild} style={{ margin: '3px', marginRight: '10px', backgroundColor: '#ffa000', color: 'white', boxShadow: 'rgb(185 185 185) 0px 0px 9px 0px' }}>
+          <AddIcon/>
         </IconBtn>
         <Box component="div" style={{ flex: 1, backgroundColor: 'white', padding: '4px', borderRadius: '40px', display: 'flex', alignContent: 'center', boxShadow: 'rgb(185 185 185) 0px 0px 9px 0px' }}>
           <IconBtn title='Open folder' onClick={onClickOpenFile} >
@@ -295,6 +313,11 @@ function LayoutMenu(props) {
   );
 }
 function AccountMenu() {
+  const selectAuth = useSelector(selectAuthItem('currentUser'));
+  const currentUser = selectAuth.data;
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -303,10 +326,13 @@ function AccountMenu() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const handleLogout = () => {
+    dispatch(actionLogout());
+  }
   return (
     <React.Fragment>
       <Box style={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        <Tooltip title="Account settings">
+        <Tooltip title={currentUser.displayName}>
           <IconButton
             onClick={handleClick}
             size="small"
@@ -315,28 +341,31 @@ function AccountMenu() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <Avatar style={{ width: 32, height: 32 }}>M</Avatar>
+            <Avatar style={{ width: 32, height: 32 }} alt={currentUser.displayName} src={currentUser.photoURL}></Avatar>
           </IconButton>
         </Tooltip>
       </Box>
       <Menu
         anchorEl={anchorEl}
+        getContentAnchorEl={null}
+        anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+        }}
+        transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+        }}
         id="account-menu"
         open={open}
         onClose={handleClose}
         onClick={handleClose}
         PaperProps={{
           elevation: 0,
-          sx: {
+          style: {
             overflow: 'visible',
             filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-            mt: 1.5,
-            '& .MuiAvatar-root': {
-              width: 32,
-              height: 32,
-              ml: -0.5,
-              mr: 1,
-            },
+            marginTop: 1,
             '&:before': {
               content: '""',
               display: 'block',
@@ -351,41 +380,70 @@ function AccountMenu() {
             },
           },
         }}
-        getContentAnchorEl={null}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem>
-          <Avatar /> Profile
-        </MenuItem>
-        <MenuItem>
-          <Avatar /> My account
-        </MenuItem>
-        <Divider />
-        <MenuItem>
+        <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Avatar style={{ marginTop: '10px', width: '80px', height: '80px', border: '1px solid grey', '& img': { borderRadius: '100%' } }} src={currentUser.photoURL} />
+          <div style={{ margin: '15px', fontSize: '20px' }}>{currentUser.displayName}</div>
+          <div style={{
+            padding: '0px 20px',
+            width: '250px',
+            fontSize: '17px',
+            lineHeight: '25px',
+            fontWeight: 400,
+            letterSpacing: 'normal',
+            color: 'rgb(138, 148, 153)',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            textAlign: 'center',
+            marginBottom: '10px'
+          }}>{currentUser.email}</div>
+        </Box>
+        <MenuItem onClick={() => navigate('/account/me')}>
           <ListItemIcon>
-            <PersonAddIcon fontSize="small" />
+            <AccountCircleIcon fontSize="small" />
           </ListItemIcon>
-          Add another account
+          <ListItemText primary='Account' />
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
             <SettingsIcon fontSize="small" />
           </ListItemIcon>
-          Settings
+          <ListItemText primary='Preferences' />
+        </MenuItem>
+        <Divider />
+        <MenuItem>
+          <ListItemIcon>
+            <HelpOutlineIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary='Help' />
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
+            <AddToPhotosIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary='Apps' />
+        </MenuItem>
+        <MenuItem>
+          <ListItemIcon>
+            <FavoriteBorderIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary='Spread the love' />
+        </MenuItem>
+        <MenuItem onClick={handleLogout}>
+          <ListItemIcon>
             <ExitToAppIcon fontSize="small" />
           </ListItemIcon>
-          Logout
+          <ListItemText primary='Logout' />
         </MenuItem>
       </Menu>
-    </React.Fragment>
+    </React.Fragment >
   );
 }
-
 function MapMenu() {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -416,6 +474,7 @@ function MapMenu() {
       </Box>
       <Menu
         anchorEl={anchorEl}
+        getContentAnchorEl={null}
         id="map-menu"
         open={open}
         onClose={handleClose}
@@ -449,13 +508,13 @@ function MapMenu() {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem>
+        <MenuItem disabled>
           Recent Maps
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={()=>navigate('/')}>
           My New Mind Map
         </MenuItem>
-        <MenuItem>
+        <MenuItem >
           Basic commands of Git
         </MenuItem>
       </Menu>
