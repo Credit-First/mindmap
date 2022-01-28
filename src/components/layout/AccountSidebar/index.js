@@ -15,8 +15,6 @@ import {
     AppBar as MaterialAppBar,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 import AccountSideBarList from './config';
 import { routes } from '../../../setup/routes';
@@ -67,6 +65,7 @@ const AppBar = styled(MaterialAppBar, {
         duration: theme.transitions.duration.leavingScreen,
     }),
     left: `calc(${theme.spacing(7)}px + 1px)`,
+    width: `calc(100vw - ${theme.spacing(7)}px - 1px)`,
     ...(open && {
         marginLeft: drawerWidth,
         left: 0,
@@ -97,7 +96,6 @@ const Drawer = styled(MaterialDrawer, { shouldForwardProp: (prop) => prop !== 'o
 
 export default function AccountSidebar(props) {
 
-    const theme = useTheme();
     const [open, setOpen] = React.useState(true);
 
     const selectAuth = useSelector(selectAuthItem('currentUser'));
@@ -111,7 +109,7 @@ export default function AccountSidebar(props) {
     function search(routes, path) {
         for (let i = 0; i < routes.length; i++) {
             const route = routes[i];
-            if (route.path == path) return route;
+            if (route.path === path) return route;
             if (route.children) {
                 let child_route = search(route.children, path);
                 if (child_route) return child_route;

@@ -11,7 +11,6 @@ import Authorization from "./auth/Authorization";
 import store from 'store';
 import defaultTheme from 'setup/theme';
 
-// import Mindmap from "./components/mindmap";
 const theme = createTheme(defaultTheme);
 
 const generateClassName = createGenerateClassName({

@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { useLocation, useNavigate, NavLink } from 'react-router-dom';
+import { useLocation, NavLink } from 'react-router-dom';
 import {
     Box,
+    Button,
     ListItem,
     ListItemIcon,
     ListItemText,
@@ -14,9 +15,7 @@ import AccessTimeIcon from '@material-ui/icons/AccessTime';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
 import LanguageIcon from '@material-ui/icons/Language';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import { withStyles } from '@material-ui/styles';
-
-const defaultProps = {};
+import { makeStyles, withStyles } from '@material-ui/styles';
 
 const styles = (theme) => ({
     root: {
@@ -46,7 +45,7 @@ const styles = (theme) => ({
         },
         color: 'inherit!important',
         textDecoration: 'none!important',
-    }
+    },
 });
 
 const NavBar = styled('nav', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -86,7 +85,7 @@ const data = [
 
 function CustomizedList({ classes, open }) {
     const location = useLocation();
-    const navigate = useNavigate();
+    const currentPath = location.pathname;
 
     return (
         <Box >
@@ -94,12 +93,12 @@ function CustomizedList({ classes, open }) {
                 {
                     data.map((item) => {
                         return (
-                            <ListItem 
+                            <ListItem
                                 button
                                 key={item.label}
                                 component={NavLink}
                                 to={item.link}
-                                className={classNames(classes.root, { 'open': open, 'active': (location.pathname === item.link) })}
+                                className={classNames(classes.root, { 'open': open, 'active': (currentPath === item.link) })}
                                 onClick={() => { }}
                             >
                                 <ListItemIcon style={{ color: 'inherit', paddingRight: 1 }}>
@@ -114,6 +113,7 @@ function CustomizedList({ classes, open }) {
                     })
                 }
             </NavBar>
+            <UpgradeDiv open={open}/>
         </Box>
     );
 }
@@ -122,3 +122,51 @@ CustomizedList.propTypes = {
 };
 
 export default withStyles(styles, { withTheme: true })(CustomizedList);
+
+const useStyles = makeStyles((theme, open) => ({
+    root: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        margin: '10px',
+        padding: '15px',
+        borderRadius: '10px',
+        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    },
+    title: {
+        fontSize: '18px'
+    },
+    text: {
+        whiteSpace: 'normal',
+        lineHeight: 2
+    },
+    button: {
+        padding: '5px 15px',
+        textTransform: 'capitalize',
+        borderRadius: '50px',
+        color: 'white',
+        backgroundColor: 'rgb(255, 170, 0)',
+        '&:hover': {
+            backgroundColor: 'rgb(247 194 87)'
+        }
+    }
+}));
+function UpgradeDiv({open}) {
+    const classes = useStyles();
+
+    return (
+        <div className={classes.root} style={{...(!open && {display: 'none'})}}>
+            <div>
+                <div className={classes.title}>Go Pro</div>
+                <div className={classes.text}>Get unlimited maps, attached files and images, export to PDF & more.</div>
+            </div>
+            <Button
+                className={classes.button}
+                startIcon={<StarOutlineIcon />}
+            >
+                Upgrade
+            </Button>
+        </div>
+    )
+}

@@ -1,0 +1,60 @@
+{
+  "_from": "@blink-mind/core@0.0.20-beta.6",
+  "_id": "@blink-mind/core@0.0.20-beta.6",
+  "_inBundle": false,
+  "_integrity": "sha512-QlSjYAyPFM3ZTyO7urt7fNmEk5EBXyQlXm8O/QCXRuRqXXQR2X+kxIwAhFXOp6f+cJ7bpoG5AC+CvQjWrqokjg==",
+  "_location": "/@blink-mind/core",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "@blink-mind/core@0.0.20-beta.6",
+    "name": "@blink-mind/core",
+    "escapedName": "@blink-mind%2fcore",
+    "scope": "@blink-mind",
+    "rawSpec": "0.0.20-beta.6",
+    "saveSpec": null,
+    "fetchSpec": "0.0.20-beta.6"
+  },
+  "_requiredBy": [
+    "/",
+    "/@blink-mind/plugin-json-serializer",
+    "/@blink-mind/plugin-rich-text-editor",
+    "/@blink-mind/plugin-theme-selector",
+    "/@blink-mind/plugin-topology-diagram",
+    "/@blink-mind/plugins",
+    "/@blink-mind/renderer-react"
+  ],
+  "_resolved": "https://registry.npmjs.org/@blink-mind/core/-/core-0.0.20-beta.6.tgz",
+  "_shasum": "afa6e26a2ea73d6940c46102dc1095118fbc3052",
+  "_spec": "@blink-mind/core@0.0.20-beta.6",
+  "_where": "C:\\Alexey\\Work\\MindMap",
+  "bundleDependencies": false,
+  "dependencies": {
+    "immutable": "^4.0.0-rc.12",
+    "is-plain-object": "^3.0.0",
+    "memoize-one": "^5.1.1"
+  },
+  "deprecated": false,
+  "description": "The package contains  model definition and the middleware infrastructure of the blink-mind. # 备忘录 babel.config.js 是为了jest需要",
+  "files": [
+    "lib/"
+  ],
+  "gitHead": "3dcacccc4d71352f8c2560b48f4f94fd324cbd7b",
+  "license": "MIT",
+  "main": "lib/main.js",
+  "module": "lib/main.es.js",
+  "name": "@blink-mind/core",
+  "peerDependencies": {
+    "debug": "2.6.9",
+    "tiny-warning": "^1.0.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "umd": "dist/main.js",
+  "version": "0.0.20-beta.6"
+}

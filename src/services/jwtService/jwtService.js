@@ -1,25 +1,6 @@
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
-
-class Emitter {
-    _events = {};
-    on(event_name, callback) {
-        if (!this._events[event_name]) this._events[event_name] = [];
-        this._events[event_name].push(callback);
-    }
-    off(event_name, callback) {
-        const events = this._events[event_name] || [];
-        const index = events.indexOf(callback);
-        events.splice(index, 1);
-    }
-    emit(event_name, data) {
-        const events = this._events[event_name] || [];
-        events.forEach(event => {
-            event(data);
-        });
-    }
-}
-
+import { Emitter } from 'services/Emitter';
 class jwtService extends Emitter {
 
     init() {
@@ -31,15 +12,12 @@ class jwtService extends Emitter {
         axios.interceptors.response.use(response => {
             return response;
         }, err => {
-            return new Promise((resolve, reject) => {
-                if (err.response.status === 401 && err.config && !err.config.__isRetryRequest) {
-                    // if you ever get an unauthorized response, logout the user
-                    this.emit("onAutoLogout", "Invalid access_token");
+            if (err.response?.status === 401 && err.config && !err.config.__isRetryRequest) {
+                // if you ever get an unauthorized response, logout the user
+                this.emit("onAutoLogout", "Invalid access_token");
 
-                    this.setSession(null);
-                }
-                throw err;
-            });
+                this.setSession(null);
+            }
         });
     };
 
@@ -60,22 +38,22 @@ class jwtService extends Emitter {
         }
     };
 
-    // createUser = (data) => {
-    //     return new Promise((resolve, reject) => {
-    //         axios.post('/api/auth/register', data)
-    //             .then(response => {
-    //                 if ( response.data.user )
-    //                 {
-    //                     this.setSession(response.data.access_token);
-    //                     resolve(response.data.user);
-    //                 }
-    //                 else
-    //                 {
-    //                     reject(response.data.error);
-    //                 }
-    //             });
-    //     });
-    // };
+    createUser = (data) => {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/auth/register', data)
+                .then(response => {
+                    if ( response.data.user )
+                    {
+                        this.setSession(response.data.access_token);
+                        resolve(response.data.user);
+                    }
+                    else
+                    {
+                        reject(response.data.error);
+                    }
+                });
+        });
+    };
 
     signInWithEmailAndPassword = (email, password) => {
         return new Promise((resolve, reject) => {

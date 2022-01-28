@@ -37,3 +37,21 @@ export function actionLogin({ email, password }) {
                 });
             });
 }
+export function actionRegister(data) {
+    return (dispatch) =>
+        jwtService.createUser(data)
+            .then((user) => {
+                dispatch(actionSetUserData(user));
+
+                return dispatch({
+                    type: TYPE_LOGIN_SUCCESS
+                });
+            }
+            )
+            .catch(error => {
+                return dispatch({
+                    type: TYPE_LOGIN_ERROR,
+                    error
+                });
+            });
+}
