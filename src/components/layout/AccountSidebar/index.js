@@ -96,7 +96,6 @@ const Drawer = styled(MaterialDrawer, { shouldForwardProp: (prop) => prop !== 'o
 
 export default function AccountSidebar(props) {
 
-    const theme = useTheme();
     const [open, setOpen] = React.useState(true);
 
     const selectAuth = useSelector(selectAuthItem('currentUser'));
@@ -110,7 +109,7 @@ export default function AccountSidebar(props) {
     function search(routes, path) {
         for (let i = 0; i < routes.length; i++) {
             const route = routes[i];
-            if (route.path == path) return route;
+            if (route.path === path) return route;
             if (route.children) {
                 let child_route = search(route.children, path);
                 if (child_route) return child_route;

@@ -113,7 +113,7 @@ function CustomizedList({ classes, open }) {
                     })
                 }
             </NavBar>
-            <UpgradeDiv />
+            <UpgradeDiv open={open}/>
         </Box>
     );
 }
@@ -123,7 +123,7 @@ CustomizedList.propTypes = {
 
 export default withStyles(styles, { withTheme: true })(CustomizedList);
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme, open) => ({
     root: {
         position: 'absolute',
         left: 0,
@@ -132,7 +132,7 @@ const useStyles = makeStyles((theme) => ({
         margin: '10px',
         padding: '15px',
         borderRadius: '10px',
-        backgroundColor: 'rgba(255, 255, 255, 0.15)'
+        backgroundColor: 'rgba(255, 255, 255, 0.15)',
     },
     title: {
         fontSize: '18px'
@@ -152,11 +152,11 @@ const useStyles = makeStyles((theme) => ({
         }
     }
 }));
-function UpgradeDiv() {
+function UpgradeDiv({open}) {
     const classes = useStyles();
 
     return (
-        <div className={classes.root}>
+        <div className={classes.root} style={{...(!open && {display: 'none'})}}>
             <div>
                 <div className={classes.title}>Go Pro</div>
                 <div className={classes.text}>Get unlimited maps, attached files and images, export to PDF & more.</div>

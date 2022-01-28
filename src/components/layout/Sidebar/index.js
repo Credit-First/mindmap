@@ -23,6 +23,7 @@ import {
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import SearchIcon from '@material-ui/icons/Search';
 import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
@@ -32,14 +33,13 @@ import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import AddToPhotosIcon from '@material-ui/icons/AddToPhotos';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import AppsIcon from '@material-ui/icons/Apps';
 import ListIcon from '@material-ui/icons/List';
 
 import SideBarList from './config';
 import { routes } from '../../../setup/routes';
 import { actionLogout, actionSetSortType, actionSetUpgradeType } from 'store/actions';
-import { selectAuthItem, selectSortType, selectUpgradeType } from 'store/selectors';
+import { selectAuthItem, selectFolder, selectUpgradeType } from 'store/selectors';
 
 const drawerWidth = 240;
 
@@ -117,6 +117,7 @@ export default function SideBar(props) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
   const location = useLocation();
+  const { title } = useSelector(selectFolder);
 
   function search(routes, path) {
     for (let i = 0; i < routes.length; i++) {
@@ -157,7 +158,7 @@ export default function SideBar(props) {
           backgroundColor: 'white',
           ...(open && { borderTopLeftRadius: 20 })
         }}>
-          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', minHeight: '96px', }}>
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -176,7 +177,17 @@ export default function SideBar(props) {
             <Typography variant="h5" noWrap component="div" style={{
               padding: theme.spacing(4, 2),
             }}>
-              {currentRoute && currentRoute.name}
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <div>
+                  {currentRoute && currentRoute.name}
+                </div>
+                {title && (
+                  <ChevronRightIcon style={{ marginRight: 10, marginLeft: 10 }} />
+                )}
+                <div>
+                  {title}
+                </div>
+              </div>
             </Typography>
           </div>
           <AccountMenu />
@@ -312,7 +323,7 @@ function AccountMenu() {
   const handleLogout = () => {
     dispatch(actionLogout());
   }
-  
+
   const handleUpgrade = () => {
     dispatch(actionSetUpgradeType(!upgradeState));
   }

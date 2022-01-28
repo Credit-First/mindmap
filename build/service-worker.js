@@ -14,11 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-<<<<<<< Updated upstream
-  "/react-mindmap/precache-manifest.fc1eb76942c452bd98d7e74b6dbb82a9.js"
-=======
-  "/precache-manifest.ff87fa918be2626d70b4ea4bf32b7d7d.js"
->>>>>>> Stashed changes
+  "/precache-manifest.c45143fc7497f43d9cea28a472179967.js"
 );
 
 self.addEventListener('message', (event) => {
@@ -37,11 +33,7 @@ workbox.core.clientsClaim();
 self.__precacheManifest = [].concat(self.__precacheManifest || []);
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
-<<<<<<< Updated upstream
-workbox.routing.registerNavigationRoute(workbox.precaching.getCacheKeyForURL("/react-mindmap/index.html"), {
-=======
 workbox.routing.registerNavigationRoute(workbox.precaching.getCacheKeyForURL("/index.html"), {
->>>>>>> Stashed changes
   
   blacklist: [/^\/_/,/\/[^/?]+\.[^/]+$/],
 });

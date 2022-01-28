@@ -1,0 +1,1 @@
+export const selectMapList = state => state.map.list;

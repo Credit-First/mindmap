@@ -1,12 +1,7 @@
-<<<<<<< Updated upstream
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-=======
-/* @tailwind base;
-@tailwind components;
-@tailwind utilities; */
->>>>>>> Stashed changes
 
 html {
   font-size: inherit !important;

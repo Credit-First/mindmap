@@ -13,7 +13,9 @@ import cx from 'classnames';
 import { Select } from '@blueprintjs/select';
 import { SketchPicker } from 'react-color';
 import { merge, clone, isEqual } from 'lodash';
-import Picker, { SKIN_TONE_MEDIUM_DARK } from 'emoji-picker-react';
+// import Picker, { SKIN_TONE_MEDIUM_DARK } from 'emoji-picker-react';
+import "emoji-mart/css/emoji-mart.css";
+import { Picker } from "emoji-mart";
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -60,9 +62,9 @@ function __rest(s, e) {
     for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
         t[p] = s[p];
     if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
+        for (var i = 0, j = Object.getOwnPropertySymbols(s); i < j.length; i++) {
+            if (e.indexOf(j[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, j[i]))
+                t[j[i]] = s[j[i]];
         }
     return t;
 }
@@ -134,6 +136,7 @@ var BaseWidget = /** @class */ (function (_super) {
     return BaseWidget;
 }(PureComponent));
 
+var templateObject_1, templateObject_2;
 var log = debug('node:drag-scroll-widget');
 var DragScrollView = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  position: relative;\n  width: 100%;\n  height: 100%;\n  overflow: scroll;\n"], ["\n  position: relative;\n  width: 100%;\n  height: 100%;\n  overflow: scroll;\n"])));
 var DragScrollContent = styled.div(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  position: relative;\n  width: max-content;\n"], ["\n  position: relative;\n  width: max-content;\n"])));
@@ -273,7 +276,6 @@ var DragScrollWidget = /** @class */ (function (_super) {
     };
     return DragScrollWidget;
 }(Component));
-var templateObject_1, templateObject_2;
 
 var log$1 = debug('node:save-ref');
 //TODO 可能会引起内存泄露,在删除一个topic时
@@ -333,6 +335,7 @@ var SaveRef = /** @class */ (function (_super) {
     return SaveRef;
 }(Component));
 
+var templateObject_1$1, templateObject_2$1, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11;
 var Flex = styled.div(templateObject_1$1 || (templateObject_1$1 = __makeTemplateObject(["\n  display: flex;\n  flex-direction: ", ";\n  align-items: ", ";\n  justify-content: ", ";\n"], ["\n  display: flex;\n  flex-direction: ",
     ";\n  align-items: ", ";\n  justify-content: ", ";\n"])), function (props) {
         return props.flexDirection ? props.flexDirection : 'row';
@@ -347,7 +350,6 @@ var Title = styled.div(templateObject_8 || (templateObject_8 = __makeTemplateObj
 var TopicBlockIcon = styled.span(templateObject_9 || (templateObject_9 = __makeTemplateObject(["\n  margin: 0px 10px;\n  &:hover {\n    color: palevioletred;\n  }\n"], ["\n  margin: 0px 10px;\n  &:hover {\n    color: palevioletred;\n  }\n"])));
 var ZIndex = styled.div(templateObject_10 || (templateObject_10 = __makeTemplateObject(["\n  z-index: ", ";\n"], ["\n  z-index: ", ";\n"])), function (props) { return props.zIndex; });
 var PanelTabRoot = styled.div(templateObject_11 || (templateObject_11 = __makeTemplateObject(["\n  min-width: 360px;\n  max-height: 470px;\n  overflow: auto;\n"], ["\n  min-width: 360px;\n  max-height: 470px;\n  overflow: auto;\n"])));
-var templateObject_1$1, templateObject_2$1, templateObject_3, templateObject_4, templateObject_5, templateObject_6, templateObject_7, templateObject_8, templateObject_9, templateObject_10, templateObject_11;
 
 var log$2 = debug('plugin:event');
 function EventPlugin() {
@@ -1231,6 +1233,7 @@ function ContextMenuPlugin() {
     };
 }
 
+var templateObject_1$2;
 var log$4 = debug('node:topic-drop-effect');
 var DropEffectSvg = styled.svg(templateObject_1$2 || (templateObject_1$2 = __makeTemplateObject(["\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 2;\n  pointer-events: none;\n"], ["\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 2;\n  pointer-events: none;\n"])));
 var TopicDropEffect = /** @class */ (function (_super) {
@@ -1282,8 +1285,8 @@ var TopicDropEffect = /** @class */ (function (_super) {
     };
     return TopicDropEffect;
 }(BaseWidget));
-var templateObject_1$2;
 
+var templateObject_1$3;
 var log$5 = debug('plugin:drag-and-drop');
 var DropArea = styled.div(templateObject_1$3 || (templateObject_1$3 = __makeTemplateObject(["\n  height: ", ";\n  width: 100%;\n  margin: 5px 0px;\n"], ["\n  height: ", ";\n  width: 100%;\n  margin: 5px 0px;\n"])), function (props) { return props.height + "px"; });
 function DragAndDropPlugin() {
@@ -1378,8 +1381,8 @@ function DragAndDropPlugin() {
         }
     };
 }
-var templateObject_1$3;
 
+var templateObject_1$4, templateObject_2$2, templateObject_3$1;
 var EditorRootBreadcrumbsRoot = styled(ZIndex)(templateObject_1$4 || (templateObject_1$4 = __makeTemplateObject(["\n  position: absolute;\n  width: 20%;\n  padding: 0 5px;\n  background: white;\n  left: 30px;\n  top: 20px;\n  border-radius: 2px;\n"], ["\n  position: absolute;\n  width: 20%;\n  padding: 0 5px;\n  background: white;\n  left: 30px;\n  top: 20px;\n  border-radius: 2px;\n"])));
 var TooltipContent = styled.div(templateObject_2$2 || (templateObject_2$2 = __makeTemplateObject(["\n  max-width: 600px;\n"], ["\n  max-width: 600px;\n"])));
 var BreadcrumbTitle = styled.span(templateObject_3$1 || (templateObject_3$1 = __makeTemplateObject([""], [""])));
@@ -1447,8 +1450,8 @@ var EditorRootBreadcrumbs = /** @class */ (function (_super) {
     };
     return EditorRootBreadcrumbs;
 }(BaseWidget));
-var templateObject_1$4, templateObject_2$2, templateObject_3$1;
 
+var templateObject_1$5, templateObject_2$3;
 var NodeLayer = styled.div(templateObject_1$5 || (templateObject_1$5 = __makeTemplateObject(["\n  position: relative;\n  display: flex;\n  align-items: center;\n  padding: 5px;\n"], ["\n  position: relative;\n  display: flex;\n  align-items: center;\n  padding: 5px;\n"])));
 var DIV = styled.div(templateObject_2$3 || (templateObject_2$3 = __makeTemplateObject(["\n  width: 100%;\n  height: 100%;\n  background: ", ";\n"], ["\n  width: 100%;\n  height: 100%;\n  background: ", ";\n"])), function (props) { return props.theme.background; });
 var MindDragScrollWidget = /** @class */ (function (_super) {
@@ -1547,7 +1550,6 @@ var MindDragScrollWidget = /** @class */ (function (_super) {
     ], MindDragScrollWidget);
     return MindDragScrollWidget;
 }(Component));
-var templateObject_1$5, templateObject_2$3;
 
 var Modals = /** @class */ (function (_super) {
     __extends(Modals, _super);
@@ -1570,6 +1572,7 @@ var Modals = /** @class */ (function (_super) {
     return Modals;
 }(BaseWidget));
 
+var templateObject_1$6;
 var RootLinksSvg = styled.svg(templateObject_1$6 || (templateObject_1$6 = __makeTemplateObject(["\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 1;\n  pointer-events: none;\n"], ["\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 1;\n  pointer-events: none;\n"])));
 var log$6 = debug('node:root-sub-links');
 var RootSubLinks = /** @class */ (function (_super) {
@@ -1651,8 +1654,8 @@ var RootSubLinks = /** @class */ (function (_super) {
     };
     return RootSubLinks;
 }(BaseWidget));
-var templateObject_1$6;
 
+var templateObject_1$7, templateObject_2$4;
 var log$7 = debug('RootNode');
 var LayerPart = styled.div(templateObject_1$7 || (templateObject_1$7 = __makeTemplateObject(["\n  display: flex;\n  position: relative;\n\n  align-items: ", ";\n  flex-direction: column;\n\n  padding: ", ";\n"], ["\n  display: flex;\n  position: relative;\n\n  align-items: ",
     ";\n  flex-direction: column;\n\n  padding: ",
@@ -1723,8 +1726,8 @@ var RootWidget = /** @class */ (function (_super) {
     };
     return RootWidget;
 }(Component));
-var templateObject_1$7, templateObject_2$4;
 
+var templateObject_1$8, templateObject_2$5, templateObject_3$2;
 var Icon$1 = styled.div(templateObject_3$2 || (templateObject_3$2 = __makeTemplateObject(["\n  position: absolute;\n  top: calc(50% - 10px);\n  ", ";\n  border-radius: 50%;\n  width: 20px;\n  height: 20px;\n  text-align: center;\n  //@ts-ignore\n  background: ", ";\n  cursor: pointer;\n  padding: 0;\n  font-size: 14px;\n  line-height: 20px;\n  border: 0;\n  z-index: 2;\n"], ["\n  position: absolute;\n  top: calc(50% - 10px);\n  ",
     ";\n  border-radius: 50%;\n  width: 20px;\n  height: 20px;\n  text-align: center;\n  //@ts-ignore\n  background: ", ";\n  cursor: pointer;\n  padding: 0;\n  font-size: 14px;\n  line-height: 20px;\n  border: 0;\n  z-index: 2;\n"])), function (_a) {
         var dir = _a.dir;
@@ -1746,8 +1749,8 @@ function TopicCollapseIcon(props) {
             _a))
     })) : null;
 }
-var templateObject_1$8, templateObject_2$5, templateObject_3$2;
 
+var templateObject_1$9, templateObject_2$6;
 var log$8 = debug('node:topic-content2');
 var EditingRoot = styled.div(templateObject_1$9 || (templateObject_1$9 = __makeTemplateObject(["\n  position: relative;\n"], ["\n  position: relative;\n"])));
 var EditingWrapper = styled.div(templateObject_2$6 || (templateObject_2$6 = __makeTemplateObject(["\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: auto;\n  z-index: 10;\n  color: black;\n"], ["\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: auto;\n  z-index: 10;\n  color: black;\n"])));
@@ -1798,8 +1801,8 @@ function TopicContent(props) {
         child
     ));
 }
-var templateObject_1$9, templateObject_2$6;
 
+var templateObject_1$a, templateObject_2$7;
 var log$9 = debug('node:topic-content-widget');
 var TopicContent$1 = styled.div(templateObject_1$a || (templateObject_1$a = __makeTemplateObject(["\n  display: flex;\n  align-items: center;\n  cursor: pointer;\n  //overflow: hidden;\n  position: relative;\n"], ["\n  display: flex;\n  align-items: center;\n  cursor: pointer;\n  //overflow: hidden;\n  position: relative;\n"])));
 var TopicContentWithDropArea = styled.div(templateObject_2$7 || (templateObject_2$7 = __makeTemplateObject(["\n  position: relative;\n"], ["\n  position: relative;\n"])));
@@ -1871,6 +1874,7 @@ var TopicContentWidget = /** @class */ (function (_super) {
             return;
         }
         this.operation(OpType.FOCUS_TOPIC, __assign(__assign({}, this.props), { focusMode: FocusMode.SHOW_POPUP }));
+
         return controller.run('renderTopicContextMenu', this.props);
     };
     TopicContentWidget.prototype.onContextMenuClose = function () {
@@ -1930,8 +1934,8 @@ var TopicContentWidget = /** @class */ (function (_super) {
     ], TopicContentWidget);
     return TopicContentWidget;
 }(BaseWidget));
-var templateObject_1$a, templateObject_2$7;
 
+var templateObject_1$b;
 var log$a = debug('node:topic-desc');
 var TooltipContentWrapper = styled.div(templateObject_1$b || (templateObject_1$b = __makeTemplateObject(["\n  overflow: auto;\n"], ["\n  overflow: auto;\n"])));
 function TopicDesc(props) {
@@ -1969,8 +1973,8 @@ function TopicDesc(props) {
     var descIcon = desc.block && createElement(Popover, __assign({}, tooltipProps));
     return descIcon;
 }
-var templateObject_1$b;
 
+var templateObject_1$c;
 // var FocusHighlightSvg = styled.svg(templateObject_1$c || (templateObject_1$c = __makeTemplateObject(["\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 2;\n  pointer-events: none;\n"], ["\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 2;\n  pointer-events: none;\n"])));
 var FocusHighlightDiv = styled.div(templateObject_1$c || (templateObject_1$c = __makeTemplateObject(["\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 3;\n pointer-events: none;\n"], ["\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 3;\n pointer-events: none;\n"])));
 var TopicHighlight = /** @class */ (function (_super) {
@@ -1978,17 +1982,25 @@ var TopicHighlight = /** @class */ (function (_super) {
     function TopicHighlight() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.state = {
-            content: null
+            content: function () { },
+            expand_emoji: false,
         };
+        _this.handleEmojiClose = (event) => {
+            var closest = event.target.closest("#emoji-context");
+            _this.setState({
+                ..._this.state, expand_emoji: !!closest
+            })
+        }
         return _this;
     }
     TopicHighlight.prototype.layout = function () {
-        var _a = this.props, getRef = _a.getRef, model = _a.model, zoomFactor = _a.zoomFactor;
+        var _a = this.props, getRef = _a.getRef, model = _a.model, zoomFactor = _a.zoomFactor, controller = _a.controller, zIndex = _a.zIndex, topicKey = _a.topicKey;
+
         var focusKey = model.focusKey;
         var focusMode = model.focusMode;
         if (!focusKey || focusMode === FocusMode.EDITING_CONTENT) {
             this.setState({
-                content: null
+                content: function () { },
             });
             return;
         }
@@ -2016,27 +2028,73 @@ var TopicHighlight = /** @class */ (function (_super) {
                 event.target.style.borderColor = model.config.theme.background;
             }
         }
-        this.setState({
-            content: (
-                createElement('div', { style: { width: width, height: height, border: `3px solid ${model.config.theme.highlightColor}`, borderRadius: '50px', borderBottomRightRadius: '0px', position: 'absolute', top: `${y}px`, left: `${x}px` } },
-                    createElement('div', { id: 'settingIcon', style: { zIndex: 9, pointerEvents: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '20px', height: '20px', position: 'absolute', right: '0px', top: '4%', ...((height < 100) && { top: '-4%' }), border: `2px solid ${model.config.theme.background}`, backgroundColor: `${model.config.theme.highlightColor}`, color: 'white', borderRadius: '50%' }, onMouseOver: (MouseOver), onMouseOut: (MouseOut), },
-                        createElement('div', { style: { pointerEvents: 'none', position: 'absolute', top: '-5px' } }, '...')
-                    ),
-                    createElement('div', { style: { width: '10px', height: '10px', borderRadius: '100%', border: `2px solid ${model.config.theme.highlightColor}`, position: 'absolute', backgroundColor: `${model.config.theme.background}`, bottom: '-6px', right: '-6px' } })
-                ))
-        });
-    };
 
+        var handleSettingClick = (e) => {
+
+            _a = __assign(__assign({}, _a), { topicKey: model.focusKey });
+
+            this.setState({
+                expand_emoji: !this.state.expand_emoji,
+            });
+        }
+        var handleAddEmoji = (emoji) => {
+
+            controller.run('operation', __assign(__assign({}, _a), {
+                opType: OpType.ADD_EMOJI, emoji: emoji.native, function() {
+                    var diagramProps = __assign(__assign({}, _a), { controller: controller });
+                    return controller.run('renderDiagram', diagramProps);
+                }
+            }));
+            this.setState({
+                expand_emoji: false,
+            });
+        };
+        var renderContent = () => (
+            createElement('div', { style: { width: width, height: height, border: `3px solid ${model.config.theme.highlightColor}`, borderRadius: '50px', borderBottomRightRadius: '0px', position: 'absolute', top: `${y}px`, left: `${x}px` } },
+                createElement('div', { id: 'settingIcon', onClick: handleSettingClick, style: { zIndex: 9, pointerEvents: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '20px', height: '20px', position: 'absolute', right: '0px', top: '4%', ...((height < 100) && { top: '-4%' }), border: `2px solid ${model.config.theme.background}`, backgroundColor: `${model.config.theme.highlightColor}`, color: 'white', borderRadius: '50%' }, onMouseOver: (MouseOver), onMouseOut: (MouseOut), },
+                    createElement('div', { style: { pointerEvents: 'none', position: 'absolute', top: '-5px' } }, '...'),
+                ),
+                (this.state.expand_emoji && (
+                    createElement('div', {id: 'emoji-context'},
+                        createElement(Picker,
+                            {
+                                id: 'dddd',
+                                onSelect: handleAddEmoji,
+                                native: true,
+                                style: { pointerEvents: 'auto', boxShadow: 'none', border: 'none', top: '0px', left: width, position: 'absolute' },
+                            },
+                        ))
+                )),
+                createElement('div', { style: { width: '10px', height: '10px', borderRadius: '100%', border: `2px solid ${model.config.theme.highlightColor}`, position: 'absolute', backgroundColor: `${model.config.theme.background}`, bottom: '-6px', right: '-6px' } })
+            )
+        );
+
+        this.setState({
+            content: renderContent
+        });
+
+    };
+    TopicHighlight.prototype.componentDidMount = function () {
+        window.addEventListener('mouseup', this.handleEmojiClose)
+    }
+    TopicHighlight.prototype.componentWillUnmount = function () {
+        window.removeEventListener('mouseup', this.handleEmojiClose)
+    }
+    TopicHighlight.prototype.componentDidUpdate = function () {
+        this.setState({
+            content: this.state.content
+        });
+    }
     TopicHighlight.prototype.render = function () {
         var saveRef = this.props.saveRef;
-        return (createElement(FocusHighlightDiv, { ref: saveRef(RefKey.SVG_HIGHLIGHT_KEY) }, this.state.content));
+        return (createElement(FocusHighlightDiv, { ref: saveRef(RefKey.SVG_HIGHLIGHT_KEY) }, this.state.content()));
     };
     return TopicHighlight;
 }(BaseWidget));
-var templateObject_1$c;
-
 var TopicLinksSvg = styled.svg(templateObject_1$d || (templateObject_1$d = __makeTemplateObject(["\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 1;\n  pointer-events: none;\n"], ["\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  left: 0;\n  top: 0;\n  z-index: 1;\n  pointer-events: none;\n"])));
 var log$b = debug('node:topic-sub-links');
+
+var templateObject_1$d;
 var TopicSubLinks = /** @class */ (function (_super) {
     __extends(TopicSubLinks, _super);
     function TopicSubLinks() {
@@ -2138,7 +2196,6 @@ var TopicSubLinks = /** @class */ (function (_super) {
     };
     return TopicSubLinks;
 }(BaseWidget));
-var templateObject_1$d;
 
 var log$c = debug('node:topic-widget');
 var Node = styled.div(templateObject_1$e || (templateObject_1$e = __makeTemplateObject(["\n  display: flex;\n  align-items: center;\n  flex-direction: ", ";\n"], ["\n  display: flex;\n  align-items: center;\n  flex-direction: ",
@@ -2156,6 +2213,8 @@ var NodeTopic = styled.div(templateObject_3$3 || (templateObject_3$3 = __makeTem
     ";\n"])), function (props) {
         return props.topicDirection === TopicDirection.RIGHT ? 'row' : 'row-reverse';
     });
+
+var templateObject_1$e, templateObject_2$8, templateObject_3$3;
 var TopicWidget = /** @class */ (function (_super) {
     __extends(TopicWidget, _super);
     function TopicWidget() {
@@ -2204,8 +2263,8 @@ var TopicWidget = /** @class */ (function (_super) {
     };
     return TopicWidget;
 }(Component));
-var templateObject_1$e, templateObject_2$8, templateObject_3$3;
 
+var templateObject_1$f, templateObject_2$9, templateObject_3$4;
 var log$d = debug('node:view-port-viewer');
 var ViewerRoot = styled(ZIndex)(templateObject_1$f || (templateObject_1$f = __makeTemplateObject(["\n  position: absolute;\n  background: white;\n  left: 30px;\n  bottom: 20px;\n  border-radius: 2px;\n  display: flex;\n  flex-direction: row;\n  user-select: none;\n border-radius: 50px;\n padding: 5px;\n box-shadow: rgb(185 185 185) 0px 0px 9px 0px;\n"], ["\n  position: absolute;\n  background: white;\n  right: 30px;\n  bottom: 20px;\n  border-radius: 2px;\n  display: flex;\n  flex-direction: row;\n  user-select: none;\n border-radius: 50px;\n padding: 5px;\n box-shadow: rgb(185 185 185) 0px 0px 9px 0px;\n"])));
 var Item_ = styled(Btn)(templateObject_2$9 || (templateObject_2$9 = __makeTemplateObject(["\n  margin: 10px;\n"], ["\n  margin: 10px;\n"])));
@@ -2283,8 +2342,8 @@ var ViewPortViewer = /** @class */ (function (_super) {
     };
     return ViewPortViewer;
 }(BaseWidget));
-var templateObject_1$f, templateObject_2$9, templateObject_3$4;
 
+var templateObject_1$g;
 var DescEditorWrapper = styled.div(templateObject_1$g || (templateObject_1$g = __makeTemplateObject(["\n  overflow: auto;\n  padding: 0px 0px 0px 20px;\n  background: #88888850;\n"], ["\n  overflow: auto;\n  padding: 0px 0px 0px 20px;\n  background: #88888850;\n"])));
 function renderDrawer(props) {
     var controller = props.controller, model = props.model, topicKey = props.topicKey;
@@ -2300,7 +2359,6 @@ function renderDrawer(props) {
             createElement(DescEditorWrapper, null, descEditor)));
     }
 }
-var templateObject_1$g;
 
 //TODO 是否需要themeProvider
 function Theme(_a) {
@@ -2311,6 +2369,7 @@ function Theme(_a) {
             createElement(Fragment, null, children)));
 }
 
+var templateObject_1$h;
 var log$e = debug('plugin:rendering');
 function RenderingPlugin() {
     var DiagramRoot = styled.div(templateObject_1$h || (templateObject_1$h = __makeTemplateObject(["\n    width: 100%;\n    height: 100%;\n    background: ", ";\n    position: relative;\n  "], ["\n    width: 100%;\n    height: 100%;\n    background: ", ";\n    position: relative;\n  "])), function (props) { return props.theme.background; });
@@ -2442,8 +2501,8 @@ function RenderingPlugin() {
         }
     };
 }
-var templateObject_1$h;
 
+var templateObject_1$i, templateObject_2$a, templateObject_2$c, templateObject_2$d;
 var PanelRoot = styled(ZIndex)(templateObject_1$i || (templateObject_1$i = __makeTemplateObject(["\n  position: absolute;\n  background: white;\n  right: 30px;\n  top: calc(100vh - 75%);\n padding: 5px;\n box-shadow: rgb(185 185 185) 0px 0px 9px 0px;\n border-radius: 50px;\n  user-select: none;\n"], ["\n  position: absolute;\n  background: white;\n  right: 30px;\n  top: calc(100vh - 65%);\n padding: 5px;\n box-shadow: rgb(185 185 185) 0px 0px 9px 0px;\n border-radius: 50px;\n  user-select: none;\n"])));
 var Panel_Root = styled(ZIndex)(templateObject_2$c || (templateObject_2$c = __makeTemplateObject(["\n  position: absolute;\n  background: white;\n  right: 30px;\n  top: calc(100vh - 75%);\n padding: 5px;\n box-shadow: rgb(185 185 185) 0px 0px 9px 0px;\n user-select: none;\n"], ["\n  position: absolute;\n  background: white;\n  right: 30px;\n  top: calc(100vh - 65%);\n padding: 5px;\n box-shadow: rgb(185 185 185) 0px 0px 9px 0px;\n user-select: none;\n"])));
 var StyledTabs = styled(Tabs)(templateObject_2$a || (templateObject_2$a = __makeTemplateObject(["\n  padding: 0px 10px;\n"], ["\n  padding: 0px 10px;\n"])));
@@ -2469,34 +2528,33 @@ function RightTopPanel(props) {
     if (topicKey === undefined) {
         props = __assign(__assign({}, props), { topicKey: model.focusKey });
     }
-    function handleEmojiChange(e) {
+    function handleAddEmoji(emoji) {
         controller.run('operation', __assign(__assign({}, props), {
-            opType: OpType.ADD_EMOJI, emoji: e.target.textContent, function() {
+            opType: OpType.ADD_EMOJI, emoji: emoji.native, function() {
                 var diagramProps = __assign(__assign({}, props), { controller: controller });
                 return controller.run('renderDiagram', diagramProps);
             }
         }));
-    }
+    };
     return (
         createElement(Panel_Root, { zIndex: zIndex },
             createElement(Title, null,
-                createElement(CloseIcon, { className: iconClassName(IconName.CLOSE), onClick: function () { setThemeExpand(false); setEmojiExpand(false); return } })),
+                createElement(CloseIcon, { className: iconClassName(IconName.CLOSE), onClick: function () { setThemeExpand(false); setEmojiExpand(false); return } })
+            ),
             createElement(StyledTabs, { id: selectedTabId, onChange: handleTabIdChange },
                 (expand_theme && controller.run('renderRightTopPanelTabs', props)),
-                (expand_emoji && createElement(Picker,
-                    {
-                        onEmojiClick: function (e) { return handleEmojiChange(e) },
-                        disableAutoFocus: true,
-                        // skinTone: SKIN_TONE_MEDIUM_DARK,
-                        groupNames: { smileys_people: 'PEOPLE' },
-                        native: 'true'
-                    }
-                ))
-            )
+
+            ),
+            (expand_emoji && createElement(Picker,
+                {
+                    onSelect: function (e) { return handleAddEmoji(e) },
+                    native: true,
+                    style: { boxShadow: 'none', border: 'none' }
+                }
+            ))
         )
     );
 }
-var templateObject_1$i, templateObject_2$a, templateObject_2$c, templateObject_2$d;
 
 var SettingTitle = styled.div(templateObject_1$j || (templateObject_1$j = __makeTemplateObject(["\n  margin-top: 10px;\n  margin-bottom: 5px;\n  font-weight: bold;\n"], ["\n  margin-top: 10px;\n  margin-bottom: 5px;\n  font-weight: bold;\n"])));
 var SettingItem = styled.span(templateObject_2$b || (templateObject_2$b = __makeTemplateObject(["\n  margin: 0px 10px 0px 0px;\n"], ["\n  margin: 0px 10px 0px 0px;\n"])));
@@ -2786,6 +2844,7 @@ function PaddingStyleEditor(props) {
             createElement(SettingItemNumericInput, __assign({}, leftProps)))));
 }
 
+var templateObject_1$k;
 var TopicThemeEditorRoot = styled.div(templateObject_1$k || (templateObject_1$k = __makeTemplateObject(["\n  height: 250px;\n  overflow: auto;\n"], ["\n  height: 250px;\n  overflow: auto;\n"])));
 function TopicThemeEditor(props) {
     var topicStyle = props.topicStyle, setTopicStyle = props.setTopicStyle;
@@ -2823,7 +2882,6 @@ function TopicThemeEditor(props) {
             })),
         createElement(LinkStyleEditor, __assign({}, linkStyleEditorProps))));
 }
-var templateObject_1$k;
 
 var tabId = 'normal';
 function ThemeEditor(props) {
