@@ -21,7 +21,7 @@ and limitations under the License.
 ***************************************************************************** */
 /* global Reflect, Promise */
 
-var extendStatics = function(d, b) {
+var extendStatics = function (d, b) {
     extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
         function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
@@ -34,7 +34,7 @@ function __extends(d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 }
 
-var __assign = function() {
+var __assign = function () {
     __assign = Object.assign || function __assign(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
             s = arguments[i];
@@ -71,10 +71,12 @@ var SimpleTextEditor = /** @class */ (function (_super) {
             var wasOutside = !_this.root.contains(event.target);
             wasOutside && _this.onClickOutSide(event);
         };
-        _this.rootRef = function (saveRef) { return function (ref) {
-            saveRef(ref);
-            _this.root = ref;
-        }; };
+        _this.rootRef = function (saveRef) {
+            return function (ref) {
+                saveRef(ref);
+                _this.root = ref;
+            };
+        };
         _this.initState();
         return _this;
     }
@@ -153,7 +155,8 @@ var TopicContentEditor = /** @class */ (function (_super) {
     function TopicContentEditor(props) {
         var _this = _super.call(this, props) || this;
         _this.onKeyDown = function (e) {
-            if (e.nativeEvent.ctrlKey && e.nativeEvent.code === 'Enter') {
+            if ((!e.nativeEvent.shiftKey && e.nativeEvent.code === 'Enter') || e.nativeEvent.code === 'Tab') {
+                e.nativeEvent.preventDefault();
                 _this.save();
             }
         };
@@ -175,22 +178,27 @@ var TopicContentEditor = /** @class */ (function (_super) {
         };
     };
     TopicContentEditor.prototype.onClickOutSide = function (e) {
-        log$1('onClickOutSide');
         this.save();
     };
     TopicContentEditor.prototype.save = function () {
         var _a = this.props, model = _a.model, topicKey = _a.topicKey;
-        var readOnly = model.editingContentKey !== topicKey;
-        if (readOnly)
-            return;
         var controller = this.props.controller;
-        controller.run('operation', __assign(__assign({}, this.props), { opType: OpType.SET_TOPIC_BLOCK, blockType: BlockType.CONTENT, data: this.state.content, focusMode: FocusMode.NORMAL }));
+        if (["", "new"].includes(this.root.textContent.trim())) {
+            controller.run('operation', __assign(__assign({}, this.props), { opType: OpType.DELETE_TOPIC, blockType: BlockType.CONTENT, data: this.state.content, focusMode: FocusMode.NORMAL }));
+        } else { 
+            var readOnly = model.editingContentKey !== topicKey;
+            if (readOnly)
+                return;
+            controller.run('operation', __assign(__assign({}, this.props), { opType: OpType.SET_TOPIC_BLOCK, blockType: BlockType.CONTENT, data: this.state.content, focusMode: FocusMode.NORMAL }));
+        }
     };
     return TopicContentEditor;
 }(SimpleTextEditor));
 
 var log$2 = debug('node:topic-desc-editor');
 function descEditorRefKey(key) {
+    return "desc-editor-" + key;
+}function commentEditorRefKey(key) {
     return "desc-editor-" + key;
 }
 var TopicDescEditor = /** @class */ (function (_super) {
@@ -235,6 +243,48 @@ var TopicDescEditor = /** @class */ (function (_super) {
     return TopicDescEditor;
 }(SimpleTextEditor));
 
+var TopicCommentEditor = /** @class */ (function (_super) {
+    __extends(TopicCommentEditor, _super);
+    function TopicCommentEditor(props) {
+        var _this = _super.call(this, props) || this;
+        log$2('constructor');
+        return _this;
+    }
+    TopicCommentEditor.prototype.initState = function () {
+        _super.prototype.initState.call(this);
+        var _a = this.props, controller = _a.controller, topicKey = _a.topicKey;
+        var key = "topic-comment-data-" + topicKey;
+        var value = this.state.content;
+        controller.run('setTempValue', { key: key, value: value });
+    };
+    TopicCommentEditor.prototype.getCustomizeProps = function () {
+        var _a = this.props, model = _a.model, topicKey = _a.topicKey;
+        var block = model.getTopic(topicKey).getBlock(BlockType.COMMENT).block;
+        var readOnly = model.editingCommentKey !== topicKey;
+        var getRefKeyFunc = commentEditorRefKey;
+        return {
+            block: block,
+            readOnly: readOnly,
+            getRefKeyFunc: getRefKeyFunc,
+            placeholder: 'write topic comment here'
+        };
+    };
+    TopicCommentEditor.prototype.onChange = function (_a) {
+        var value = _a.value;
+        log$2('onChange');
+        var _b = this.props, controller = _b.controller, topicKey = _b.topicKey, model = _b.model;
+        var readOnly = model.editingCommentKey !== topicKey;
+        if (readOnly)
+            return;
+        var key = "topic-comment-data-" + topicKey;
+        controller.run('setTempValue', { key: key, value: value });
+        this.setState({
+            content: value
+        });
+    };
+    return TopicCommentEditor;
+}(SimpleTextEditor));
+
 function SimpleTextEditorPlugin() {
     return {
         getTopicTitle: function (props) {
@@ -254,9 +304,12 @@ function SimpleTextEditorPlugin() {
         renderTopicDescEditor: function (props) {
             return createElement(TopicDescEditor, __assign({}, props));
         },
+        renderTopicCommentEditor: function (props) {
+            return createElement(TopicCommentEditor, __assign({}, props));
+        },
         isBlockEmpty: function (props, next) {
             var block = props.block, controller = props.controller;
-            if (block.type === BlockType.CONTENT || block.type === BlockType.DESC) {
+            if (block.type === BlockType.CONTENT || block.type === BlockType.DESC || block.type === BlockType.COMMENT) {
                 return (block.data == null ||
                     controller.run('serializeBlockData', props) === '');
             }
@@ -264,7 +317,7 @@ function SimpleTextEditorPlugin() {
         },
         serializeBlockData: function (props, next) {
             var block = props.block;
-            if (block.type === BlockType.CONTENT || block.type === BlockType.DESC) {
+            if (block.type === BlockType.CONTENT || block.type === BlockType.DESC || block.type === BlockType.COMMENT) {
                 return typeof block.data === 'string'
                     ? block.data
                     : plainSerializer.serialize(block.data);

@@ -192,12 +192,14 @@ var TopicVisualLevel = {
 };
 var BlockType = {
     CONTENT: 'CONTENT',
-    DESC: 'DESC'
+    DESC: 'DESC',
+    COMMENT: 'COMMENT'
 };
 var FocusMode = {
     NORMAL: 'NORMAL',
     EDITING_CONTENT: 'EDITING_CONTENT',
     EDITING_DESC: 'EDITING_DESC',
+    EDITING_COMMENT: 'EDITING_COMMENT',
     SHOW_POPUP: 'SHOW_POPUP',
     DRAGGING: 'DRAGGING'
 };
@@ -226,6 +228,7 @@ var OpType = {
     // SET_TOPIC_DESC: 'SET_TOPIC_DESC',
     START_EDITING_CONTENT: 'START_EDITING_CONTENT',
     START_EDITING_DESC: 'START_EDITING_DESC',
+    START_EDITING_COMMENT: 'START_EDITING_COMMENT',
     DRAG_AND_DROP: 'DRAG_AND_DROP',
     SET_EDITOR_ROOT: 'SET_EDITOR_ROOT'
 };
@@ -558,6 +561,8 @@ function deleteTopic(_a) {
     if (topicKey === model.editorRootTopicKey)
         return model;
     var item = model.getTopic(topicKey);
+    var parent = model.getTopic(item.parentKey);
+    console.log(parent);
     if (item) {
         model = model.withMutations(function (m) {
             m.update('topics', function (topics) {
@@ -577,6 +582,11 @@ function deleteTopic(_a) {
                 m.set('focusKey', null).set('focusMode', null);
         });
     }
+    model = focusTopic({
+        model: model,
+        topicKey: item.parentKey,
+        focusMode: FocusMode.SHOW_POPUP
+    });
     return model;
 }
 /**
@@ -1004,6 +1014,13 @@ var Model = /** @class */ (function (_super) {
     Object.defineProperty(Model.prototype, "editingDescKey", {
         get: function () {
             return this.focusMode === FocusMode.EDITING_DESC ? this.focusKey : null;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Model.prototype, "editingCommentKey", {
+        get: function () {
+            return this.focusMode === FocusMode.EDITING_COMMENT ? this.focusKey : null;
         },
         enumerable: true,
         configurable: true

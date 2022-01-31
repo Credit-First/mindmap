@@ -511,7 +511,10 @@ function SearchPlugin() {
             hotKeys.globalHotKeys.set(HOT_KEY_NAME_SEARCH, {
                 label: 'search',
                 combo: 'ctrl + f',
-                onKeyDown: function () {
+                onKeyDown: function (e) {
+                    if( e.ctrlKey && e.key === 'f' ){
+                        e.preventDefault()
+                    }
                     controller.run('operation', __assign(__assign({}, props), { opType: OpType.FOCUS_TOPIC, topicKey: model.focusKey, focusMode: FOCUS_MODE_SEARCH }));
                 }
             });

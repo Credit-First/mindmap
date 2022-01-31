@@ -159,7 +159,7 @@ var TopicContentEditor = /** @class */ (function (_super) {
     function TopicContentEditor(props) {
         var _this = _super.call(this, props) || this;
         _this.onKeyDown = function (e) {
-            if (e.nativeEvent.ctrlKey && e.nativeEvent.code === 'Enter') {
+            if (!e.nativeEvent.shiftKey && e.nativeEvent.code === 'Enter') {
                 _this.save();
             }
         };

@@ -138,7 +138,7 @@ export default function TopBar(props) {
   };
   return (
     <div style={{ display: 'flex', ...(!match && { flexDirection: 'column' }), justifyContent: 'space-between', margin: '10px 20px', }}>
-      <Box component="div" style={{ backgroundColor: 'white', flexGrow: 0, padding: '4px', ...(!matches && { marginBottom: '10px ' }), borderRadius: '40px', display: 'flex', alignContent: 'center', boxShadow: 'rgb(185 185 185) 0px 0px 9px 0px' }}>
+      <Box component="div" style={{ backgroundColor: 'white', flexGrow: 0, padding: '4px', ...(!matches && { marginBottom: '10px ' }), borderRadius: '40px', display: 'flex', alignContent: 'center', justifyContent: 'space-around', boxShadow: 'rgb(185 185 185) 0px 0px 9px 0px' }}>
         <IconBtn onClick={() => navigate('/dashboard')}>
           <ChevronLeftIcon />
         </IconBtn>
@@ -151,11 +151,11 @@ export default function TopBar(props) {
         </IconBtn>
         <Button variant="contained" color='primary' startIcon={<StarOutlineIcon />} style={{ borderRadius: '40px', boxShadow: 'none' }}>Uprade Now</Button>
       </Box>
-      <Box style={{ display: 'flex', alignContent: 'center' }}>
+      <Box style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center' }}>
         <IconBtn title='Add'  onClick={onClickAddChild} style={{ margin: '3px', marginRight: '10px', backgroundColor: '#ffa000', color: 'white', boxShadow: 'rgb(185 185 185) 0px 0px 9px 0px' }}>
           <AddIcon/>
         </IconBtn>
-        <Box component="div" style={{ flex: 1, backgroundColor: 'white', padding: '4px', borderRadius: '40px', display: 'flex', alignContent: 'center', boxShadow: 'rgb(185 185 185) 0px 0px 9px 0px' }}>
+        <Box component="div" style={{ flex: 1, backgroundColor: 'white', padding: '4px', borderRadius: '40px', display: 'flex', alignContent: 'center', justifyContent: 'space-around', boxShadow: 'rgb(185 185 185) 0px 0px 9px 0px' }}>
           <IconBtn title='Open folder' onClick={onClickOpenFile} >
             <FolderOutlinedIcon />
           </IconBtn>

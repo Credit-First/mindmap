@@ -1,6 +1,6 @@
 import { BlockType } from '@blink-mind/core';
 import { createElement } from 'react';
-import { BaseWidget, descEditorRefKey } from '@blink-mind/renderer-react';
+import { BaseWidget, descEditorRefKey, commentEditorRefKey } from '@blink-mind/renderer-react';
 import RichMarkDownEditor from 'awehook-rich-markdown-editor';
 import debug from 'debug';
 import styled from 'styled-components';
@@ -167,6 +167,42 @@ var TopicDescEditor = /** @class */ (function (_super) {
     return TopicDescEditor;
 }(RichTextEditor));
 
+var TopicCommentEditor = /** @class */ (function (_super) {
+    __extends(TopicCommentEditor, _super);
+    function TopicCommentEditor() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TopicCommentEditor.prototype.initState = function () {
+        _super.prototype.initState.call(this);
+        var _a = this.props, controller = _a.controller, topicKey = _a.topicKey;
+        var key = "topic-comment-data-" + topicKey;
+        var value = this.state.content;
+        controller.run('setTempValue', { key: key, value: value });
+    };
+    TopicCommentEditor.prototype.getCustomizeProps = function () {
+        var _a = this.props, model = _a.model, topicKey = _a.topicKey;
+        var block = model.getTopic(topicKey).getBlock(BlockType.COMMENT).block;
+        var readOnly = model.editingCommentKey !== topicKey;
+        //TODO
+        var getRefKeyFunc = commentEditorRefKey;
+        return {
+            block: block,
+            readOnly: readOnly,
+            getRefKeyFunc: getRefKeyFunc,
+            placeholder: 'write topic comment here'
+        };
+    };
+    TopicCommentEditor.prototype.onChange = function (value) {
+        var _a = this.props, controller = _a.controller, topicKey = _a.topicKey;
+        var key = "topic-comment-data-" + topicKey;
+        controller.run('setTempValue', { key: key, value: value });
+        this.setState({
+            content: value
+        });
+    };
+    return TopicCommentEditor;
+}(RichTextEditor));
+
 var markdownSerializer = new MarkdownSerializer();
 
 function RichTextEditorPlugin() {
@@ -174,9 +210,12 @@ function RichTextEditorPlugin() {
         renderTopicDescEditor: function (props) {
             return createElement(TopicDescEditor, __assign({}, props));
         },
+        renderTopicCommentEditor: function (props) {
+            return createElement(TopicCommentEditor, __assign({}, props));
+        },
         isBlockEmpty: function (props, next) {
             var block = props.block, controller = props.controller;
-            if (block.type === BlockType.CONTENT || block.type === BlockType.DESC) {
+            if (block.type === BlockType.CONTENT || block.type === BlockType.DESC || block.type === BlockType.COMMENT) {
                 return (block.data == null ||
                     controller.run('serializeBlockData', props) === '');
             }
@@ -184,7 +223,7 @@ function RichTextEditorPlugin() {
         },
         serializeBlockData: function (props, next) {
             var block = props.block;
-            if (block.type === BlockType.DESC) {
+            if (block.type === BlockType.DESC || block.type === BlockType.COMMENT) {
                 return typeof block.data === 'string'
                     ? block.data
                     : markdownSerializer.serialize(block.data);

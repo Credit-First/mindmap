@@ -15,7 +15,7 @@ import {
 import DeviceHubIcon from '@material-ui/icons/DeviceHub';
 import FormatColorFillIcon from '@material-ui/icons/FormatColorFill';
 import SentimentSatisfiedAltIcon from '@material-ui/icons/SentimentSatisfiedAlt';
-
+import MessageIcon from '@material-ui/icons/Message';
 // const log = debug("app");
 
 const plugins = [
@@ -57,6 +57,7 @@ export class Mindmap extends React.Component {
   };
 
   renderDiagram() {
+
     return (
       <Diagram
         ref={this.diagramRef}
@@ -76,6 +77,11 @@ export class Mindmap extends React.Component {
         emoji={
           <IconButton>
             <SentimentSatisfiedAltIcon />
+          </IconButton>
+        }
+        comment={
+          <IconButton>
+            <MessageIcon />
           </IconButton>
         }
       />

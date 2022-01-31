@@ -364,6 +364,8 @@ function EventPlugin() {
                 return;
             if (model.editingContentKey === topicKey)
                 return;
+            if (model.editingCommentKey === topicKey)
+                return;
             if (model.focusKey === topicKey &&
                 model.focusMode === FocusMode.EDITING_CONTENT)
                 return;
@@ -372,6 +374,8 @@ function EventPlugin() {
         handleTopicDoubleClick: function (props) {
             var controller = props.controller, model = props.model;
             if (model.editingDescKey !== null)
+                return;
+            if (model.editingCommentKey !== null)
                 return;
             controller.run('operation', __assign(__assign({}, props), { opType: OpType.FOCUS_TOPIC, focusMode: FocusMode.EDITING_CONTENT }));
         },
@@ -385,6 +389,11 @@ function EventPlugin() {
             if (activeModalProps == null)
                 return null;
             if (activeModalProps.name === 'edit-desc') {
+                return function () {
+                    controller.run('operation', __assign(__assign({}, props), { focusMode: FocusMode.NORMAL, opType: OpType.FOCUS_TOPIC }));
+                };
+            }
+            if (activeModalProps.name === 'edit-comment') {
                 return function () {
                     controller.run('operation', __assign(__assign({}, props), { focusMode: FocusMode.NORMAL, opType: OpType.FOCUS_TOPIC }));
                 };
@@ -457,6 +466,9 @@ function contentEditorRefKey(key) {
 }
 function descEditorRefKey(key) {
     return "desc-editor-" + key;
+}
+function commentEditorRefKey(key) {
+    return "comment-editor-" + key;
 }
 function topicWidgetRefKey(key) {
     return "topic-widget-" + key;
@@ -602,6 +614,7 @@ var HotKeyName = {
     DELETE_TOPIC: 'DELETE_TOPIC',
     EDIT_CONTENT: 'EDIT_CONTENT',
     EDIT_NOTES: 'EDIT_NOTES',
+    EDIT_COMMENT: 'EDIT_COMMENT',
     SET_EDITOR_ROOT: 'SET_EDITOR_ROOT'
 };
 function op(opType, props) {
@@ -616,8 +629,8 @@ function HotKeyPlugin() {
         customizeHotKeys: function (props) {
             var handleKeyDown = function (opType) {
                 return function (e) {
-                    // log('HotKeyPlugin', opType);
                     op(opType, props);
+                    e.preventDefault();
                 };
             };
             var topicHotKeys = new Map([
@@ -659,6 +672,14 @@ function HotKeyPlugin() {
                         label: 'edit notes',
                         combo: 'alt + d',
                         onKeyDown: handleKeyDown(OpType.START_EDITING_DESC)
+                    }
+                ],
+                [
+                    HotKeyName.EDIT_COMMENT,
+                    {
+                        label: 'edit comment',
+                        combo: 'alt + c',
+                        onKeyDown: handleKeyDown(OpType.START_EDITING_COMMENT)
                     }
                 ],
                 [
@@ -855,6 +876,25 @@ function OperationPlugin() {
         });
         return model;
     };
+    var startEditingComment = function (_a) {
+        var model = _a.model, topicKey = _a.topicKey;
+        var topic = model.getTopic(topicKey);
+        var comment = topic.getBlock(BlockType.COMMENT);
+        if (comment.block == null || comment.block.data == null) {
+            model = ModelModifier.setBlockData({
+                model: model,
+                topicKey: topicKey,
+                blockType: BlockType.COMMENT,
+                data: ''
+            });
+        }
+        model = ModelModifier.focusTopic({
+            model: model,
+            topicKey: topicKey,
+            focusMode: FocusMode.EDITING_COMMENT
+        });
+        return model;
+    };
     function dragAndDrop(props) {
         var srcKey = props.srcKey, dstKey = props.dstKey, dropDir = props.dropDir;
         var model = props.model;
@@ -940,6 +980,7 @@ function OperationPlugin() {
         [OpType.DELETE_TOPIC_BLOCK, ModelModifier.deleteBlock],
         [OpType.START_EDITING_CONTENT, startEditingContent],
         [OpType.START_EDITING_DESC, startEditingDesc],
+        [OpType.START_EDITING_COMMENT, startEditingComment],
         [OpType.DRAG_AND_DROP, dragAndDrop],
         [OpType.SET_EDITOR_ROOT, ModelModifier.setEditorRootTopicKey]
     ]);
@@ -1126,6 +1167,7 @@ function OperationPlugin() {
                     deleteRef(contentRefKey(key));
                     deleteRef(contentEditorRefKey(key));
                     deleteRef(descEditorRefKey(key));
+                    deleteRef(commentEditorRefKey(key));
                     deleteRef(topicWidgetRefKey(key));
                     deleteRef(topicRefKey(key));
                     deleteRef(collapseRefKey(key));
@@ -1198,6 +1240,13 @@ var items = [
         shortcut: 'Alt + D',
         rootCanUse: true,
         opType: OpType.START_EDITING_DESC
+    },
+    {
+        icon: 'notes',
+        label: 'edit comments',
+        shortcut: 'Alt + C',
+        rootCanUse: true,
+        opType: OpType.START_EDITING_COMMENT
     },
     {
         icon: 'delete-node',
@@ -1935,12 +1984,13 @@ var TopicContentWidget = /** @class */ (function (_super) {
     return TopicContentWidget;
 }(BaseWidget));
 
-var templateObject_1$b;
+var templateObject_1$b, templateObject_1$bb;
 var log$a = debug('node:topic-desc');
 var TooltipContentWrapper = styled.div(templateObject_1$b || (templateObject_1$b = __makeTemplateObject(["\n  overflow: auto;\n"], ["\n  overflow: auto;\n"])));
 function TopicDesc(props) {
     var controller = props.controller, model = props.model, topicKey = props.topicKey, getRef = props.getRef;
     var isEditing = model.editingDescKey === topicKey;
+
     log$a('isEditing', isEditing);
     var onClick = function (e) {
         e.stopPropagation();
@@ -1954,15 +2004,20 @@ function TopicDesc(props) {
     var diagramRoot = getRef(RefKey.DIAGRAM_ROOT_KEY);
     var style = {
         maxWidth: '800px',
-        maxHeight: '600px'
+        minWidth: '200px',
+        maxHeight: '600px',
     };
     if (diagramRoot) {
         var dRect = diagramRoot.getBoundingClientRect();
         style.maxWidth = dRect.width * 0.6 + "px";
         style.maxHeight = dRect.height * 0.8 + "px";
     }
-    var tooltipContent = (createElement(TooltipContentWrapper, { onClick: cancelEvent, classname: Classes.POPOVER_DISMISS, style: style }, descEditor));
-    var icon = (createElement(TopicBlockIcon, { onClick: onClick, className: iconClassName(IconName.NOTES), tabIndex: -1 }));
+    var tooltipContent = (createElement(TooltipContentWrapper, { onClick: cancelEvent, classname: Classes.POPOVER_DISMISS, style: style },
+        createElement('div', { style: { margin: '5px 10px', paddingBottom: 5, fontSize: 20, borderBottom: '1px solid #c7c7c7b0' } }, 'Topic Note'),
+        createElement('div', { style: { padding: 15 } }, descEditor)
+    ));
+    var icon = (createElement(TopicBlockIcon, { onClick: onClick, style: { backgroundColor: '#c7c7c7b0', color: 'white', padding: '10px', marginRight: 0, fontSize: 15, borderRadius: '100%' }, className: iconClassName(IconName.NOTES), tabIndex: -1 }));
+
     var tooltipProps = {
         autoFocus: false,
         content: tooltipContent,
@@ -1970,8 +2025,43 @@ function TopicDesc(props) {
         interactionKind: PopoverInteractionKind.HOVER,
         hoverOpenDelay: 500
     };
+
     var descIcon = desc.block && createElement(Popover, __assign({}, tooltipProps));
     return descIcon;
+}
+
+function TopicComment(props) {
+    var controller = props.controller, model = props.model, topicKey = props.topicKey, getRef = props.getRef;
+    var isEditing = model.editingDescKey === topicKey;
+
+    log$a('isEditing', isEditing);
+    var onClick = function (e) {
+        e.stopPropagation();
+        controller.run('operation', __assign(__assign({}, props), { opType: OpType.START_EDITING_COMMENT }));
+    };
+    var comment = model.getTopic(topicKey).getBlock(BlockType.COMMENT);
+    if (!isEditing &&
+        controller.run('isBlockEmpty', __assign(__assign({}, props), { block: comment.block })))
+        return null;
+
+    var commentEditor = controller.run('renderTopicCommentEditor', props);
+    
+    var diagramRoot = getRef(RefKey.DIAGRAM_ROOT_KEY);
+    var style = {
+        maxWidth: '800px',
+        minWidth: '200px',
+        maxHeight: '600px',
+    };
+    if (diagramRoot) {
+        var dRect = diagramRoot.getBoundingClientRect();
+        style.maxWidth = dRect.width * 0.6 + "px";
+        style.maxHeight = dRect.height * 0.8 + "px";
+    }
+
+    var icon = (createElement(TopicBlockIcon, { onClick: onClick, style: { backgroundColor: '#c7c7c7b0', color: 'white', padding: '10px', marginRight: 0, fontSize: 15, borderRadius: '100%' }, className: iconClassName(IconName.NOTES), tabIndex: -1 }));
+
+    var commentIcon = comment.block && createElement('div', {}, icon);
+    return commentIcon;
 }
 
 var templateObject_1$c;
@@ -2055,7 +2145,7 @@ var TopicHighlight = /** @class */ (function (_super) {
                     createElement('div', { style: { pointerEvents: 'none', position: 'absolute', top: '-5px' } }, '...'),
                 ),
                 (this.state.expand_emoji && (
-                    createElement('div', {id: 'emoji-context'},
+                    createElement('div', { id: 'emoji-context' },
                         createElement(Picker,
                             {
                                 id: 'dddd',
@@ -2359,7 +2449,31 @@ function renderDrawer(props) {
             createElement(DescEditorWrapper, null, descEditor)));
     }
 }
+var templateObject_1$gg;
+var CommentEditorWrapper = styled.div(templateObject_1$gg || (templateObject_1$gg = __makeTemplateObject(["\n  overflow: auto;\n  padding: 0px 0px 0px 20px;\n  background: #88888850;\n"], ["\n  overflow: auto;\n  padding: 0px 0px 0px 20px;\n  background: #88888850;\n"])));
+function renderCommentDrawer(props) {
+    var controller = props.controller, model = props.model, topicKey = props.topicKey;
+    if (model.focusMode === FocusMode.EDITING_COMMENT) {
+        var onCommentEditorClose = function (e) {
+            e.stopPropagation();
+            var key = "topic-comment-data-" + topicKey;
+            var commentData = controller.run('deleteTempValue', { key: key });
+            controller.run('operation', __assign(__assign({}, props), { opType: OpType.SET_TOPIC_BLOCK, topicKey: topicKey, blockType: BlockType.COMMENT, data: commentData, focusMode: FocusMode.NORMAL }));
+            
+            // controller.run('operation', __assign(__assign({}, props), { focusMode: FocusMode.NORMAL, opType: OpType.FOCUS_TOPIC }));
+        };
+        var commentEditor = controller.run('renderTopicCommentEditor', props);
+        var modalOpen = true;
+        // return (createElement(Drawer, { key: "commentdrawer", title: "Edit Comment", icon: Icon('note'), isOpen: true, hasBackdrop: true, backdropProps: { onMouseDown: cancelEvent }, isCloseButtonShown: false, onClose: onCommentEditorClose, size: "70%" },
+        //     createElement(CommentEditorWrapper, null, commentEditor)));
+        // var Modal = (
+        //     createElement('div', )
+        // )
+        return (createElement(Dialog, { key: "commentdrawer", onClose: onCommentEditorClose, isOpen: modalOpen, autoFocus: true, enforceFocus: true, usePortal: true, style: {width: 200, height: 400}},
+            createElement("div", { className: Classes.DIALOG_BODY, style: { minHeight: 0 } }, commentEditor)));
 
+    }
+}
 //TODO 是否需要themeProvider
 function Theme(_a) {
     var theme = _a.theme, children = _a.children;
@@ -2394,6 +2508,7 @@ function RenderingPlugin() {
             }));
         },
         renderDrawer: renderDrawer,
+        renderCommentDrawer: renderCommentDrawer,
         renderDiagramCustomize: function (props) {
             var controller = props.controller, model = props.model;
             var zIndex = controller.getValue(PropKey.DIAGRAM_CUSTOMIZE_BASE_Z_INDEX);
@@ -2403,8 +2518,9 @@ function RenderingPlugin() {
             var rightTopPanel = controller.run('renderRightTopPanel', nProps);
             var modals = controller.run('renderModals', __assign(__assign({}, nProps), { zIndex: zIndex + 1 }));
             var drawer = controller.run('renderDrawer', __assign(__assign({}, nProps), { zIndex: zIndex + 1 }));
+            var commentdrawer = controller.run('renderCommentDrawer', __assign(__assign({}, nProps), { zIndex: zIndex + 1 }));
             var viewportViewer = controller.run('renderViewPortViewer', nProps);
-            return [breadcrumbs, rightTopPanel, modals, drawer, viewportViewer];
+            return [breadcrumbs, rightTopPanel, modals, drawer, commentdrawer, viewportViewer];
         },
         renderEditorRootBreadcrumbs: function (props) {
             return createElement(EditorRootBreadcrumbs, __assign({ key: "EditorRootBreadcrumbs" }, props));
@@ -2459,6 +2575,8 @@ function RenderingPlugin() {
                     return controller.run('renderTopicBlockContent', props);
                 case BlockType.DESC:
                     return controller.run('renderTopicBlockDesc', props);
+                case BlockType.COMMENT:
+                    return controller.run('renderTopicBlockComment', props);
             }
             return null;
         },
@@ -2467,6 +2585,9 @@ function RenderingPlugin() {
         },
         renderTopicBlockDesc: function (props) {
             return createElement(TopicDesc, __assign({}, props));
+        },
+        renderTopicBlockComment: function (props) {
+            return createElement(TopicComment, __assign({}, props));
         },
         renderSubLinks: function (props) {
             var saveRef = props.saveRef, topicKey = props.topicKey, model = props.model;
@@ -3309,5 +3430,5 @@ var Diagram = /** @class */ (function (_super) {
     return Diagram;
 }(Component));
 
-export { BaseWidget, Btn, CloseIcon, DefaultPlugin, Diagram, DragScrollWidget, EventKey, Flex, HotKeyName, HotKeyPlugin, Icon, IconBg, IconName, Margin, PanelTabRoot, PropKey, RefKey, SaveRef, ShowMenuIcon, StyledCheckbox, Title, TopicBlockIcon, ZIndex, browserDownloadFile, browserDownloadText, browserOpenFile, cancelEvent, center, centerPointX, centerPointY, centerX, centerY, collapseRefKey, contentEditorRefKey, contentRefKey, descEditorRefKey, dropAreaRefKey, getLinkKey, getRelativeRect, getRelativeVector, iconClassName, linksRefKey, linksSvgRefKey, paddingCss, topicRefKey, topicWidgetRefKey };
+export { BaseWidget, Btn, CloseIcon, DefaultPlugin, Diagram, DragScrollWidget, EventKey, Flex, HotKeyName, HotKeyPlugin, Icon, IconBg, IconName, Margin, PanelTabRoot, PropKey, RefKey, SaveRef, ShowMenuIcon, StyledCheckbox, Title, TopicBlockIcon, ZIndex, browserDownloadFile, browserDownloadText, browserOpenFile, cancelEvent, center, centerPointX, centerPointY, centerX, centerY, collapseRefKey, contentEditorRefKey, contentRefKey, descEditorRefKey, commentEditorRefKey, dropAreaRefKey, getLinkKey, getRelativeRect, getRelativeVector, iconClassName, linksRefKey, linksSvgRefKey, paddingCss, topicRefKey, topicWidgetRefKey };
 //# sourceMappingURL=main.es.js.map
