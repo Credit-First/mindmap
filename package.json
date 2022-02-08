@@ -1,5 +1,6 @@
 {
 	"name": "react-mindmap",
+	"homepage": "https://mindmap.com",
 	"version": "0.1.14",
 	"license": "MIT",
 	"dependencies": {
