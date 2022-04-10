@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation, Navigate } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { Tune } from "@material-ui/icons";
 
 class Authorization extends React.Component {
 
@@ -14,6 +15,7 @@ class Authorization extends React.Component {
     static getDerivedStateFromProps(props, state) {
         const { location, user } = props;
         const { pathname, state: routeState } = location;
+        
         let accessGranted = !!user;
         let redirect = null;
 

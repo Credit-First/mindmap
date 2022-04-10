@@ -6,8 +6,8 @@ import { makeStyles } from "@material-ui/styles";
 import DragList from "./DragList";
 import DropList from "./DropList";
 import { useDispatch, useSelector } from "react-redux";
-import { actionGetFolder } from "store/actions";
-import { selectFolder } from "store/selectors";
+import { actionGetFolders, actionGetFoldersById, actionDeleteFolder, actionDeleteMap } from "store/actions";
+import { selectFolder, selectCurrentFolderName, selectCurrentFolderId } from "store/selectors";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -49,34 +49,42 @@ const useStyles = makeStyles((theme) => ({
 function FileExplorer() {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const { title, dir = [] } = useSelector(selectFolder);
+    const folders = useSelector(selectFolder);
+    const currentFolderName = useSelector(selectCurrentFolderName);
+    const currentFolderId = useSelector(selectCurrentFolderId);
 
-    React.useEffect(() => {
-        dispatch(actionGetFolder(title));
-    }, []);
-
-    const handleClick = (_title) => {
-        dispatch(actionGetFolder(_title));
+    const handleClick = (_folderId) => {
+        dispatch(actionGetFoldersById(_folderId));
     }
     const handleBack = () => {
-        dispatch(actionGetFolder(title, 'BACK'));
+        dispatch(actionGetFoldersById(null));
     }
+    const handleDelete = (_folderId) => {
+        dispatch(actionDeleteFolder(_folderId));
+    }
+    const handleDeleteMap = (_mapId) => {
+        dispatch(actionDeleteMap(_mapId));
+    }
+    React.useEffect(() => {
+        dispatch(actionGetFolders());
+    }, []);
+
     return (
         <div className={classes.root}>
             <div className={classes.main} >
                 {
-                    title !== 'All' && (
-                        <div style={{fontSize: 20, marginRight: 10}}>
-                            <DropList className={classes.item} moveType='BACK' title='Back' currentFolderTitle={title} onClick={handleBack} />
+                    currentFolderName !== 'All' && (
+                        <div style={{ fontSize: 20, marginRight: 10 }}>
+                            <DropList className={classes.item} moveType='BACK' title='Back' currentFolderName={currentFolderName} onClick={handleBack} />
                         </div>
                     )
                 }
                 <Grid container spacing={2} >
                     {
-                        dir.map((item, index) => {
+                        folders.map((item, index) => {
                             return (
                                 <Grid key={index} item xs={12} xl={6} sm={4} md={4}>
-                                    <DropList {...item} currentFolderTitle={title} onClick={handleClick} />
+                                    <DropList {...item} currentFolderName={currentFolderName} onClick={handleClick} onDelete={handleDelete} />
                                 </Grid>
                             )
                         })
@@ -84,8 +92,8 @@ function FileExplorer() {
                 </Grid>
             </div>
             <div>
-                <div className={classes.folderTitle}>{title !== 'All' && title}</div>
-                <DragList folderTitle={title} />
+                <div className={classes.folderTitle}>{currentFolderName !== 'All' && currentFolderName}</div>
+                <DragList folderId={currentFolderId} onDeleteMap={handleDeleteMap} />
             </div>
         </div >
     );

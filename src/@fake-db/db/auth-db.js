@@ -24,7 +24,7 @@ let authDB = {
             password: "admin",
             role: "admin",
             data: {
-                'displayName': 'Abbott Keitch',
+                'userName': 'Abbott Keitch',
                 'photoURL': '/assets/images/avatars/Abbott.jpg',
                 'email': 'admin@admin.com',
                 settings: {
@@ -71,7 +71,7 @@ let authDB = {
             password: "staff",
             role: "staff",
             data: {
-                'displayName': 'Arnold Matlock',
+                'userName': 'Arnold Matlock',
                 'photoURL': '/assets/images/avatars/Arnold.jpg',
                 'email': 'staff@staff.com',
                 settings: {
@@ -112,17 +112,16 @@ let authDB = {
     ]
 };
 
-mock.onGet('/api/auth').reply((config) => {
+mock.onGet('/api/v1/users/sign_in').reply((config) => {
     const data = JSON.parse(config.data);
     const { email, password } = data;
-
     const user = _.cloneDeep(authDB.users.find(_user => _user.data.email === email));
 
     const error = {
         email: user ? null : 'Check your username/email',
         password: user && user.password === password ? null : 'Check your password'
     };
-    if (!error.email && !error.password && !error.displayName) {
+    if (!error.email && !error.password && !error.userName) {
         delete user['password'];
 
         // const access_token = jwt.sign({ id: user.uuid }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn });
@@ -167,21 +166,21 @@ mock.onGet('/api/auth/access-token').reply((config) => {
 
 mock.onPost('/api/auth/register').reply((request) => {
     const data = JSON.parse(request.data);
-    const { displayName, password, email } = data;
+    const { userName, password, email } = data;
     const isEmailExists = authDB.users.find(_user => _user.data.email === email);
     const error = {
         email: isEmailExists ? 'The email is already in use' : null,
-        displayName: displayName !== '' ? null : 'Enter display name',
+        userName: userName !== '' ? null : 'Enter display name',
         password: null
     };
-    if (!error.displayName && !error.password && !error.email) {
+    if (!error.userName && !error.password && !error.email) {
         const newUser = {
             uuid: generateGUID(),
             from: 'custom-db',
             password: password,
             role: "admin",
             data: {
-                displayName: displayName,
+                userName: userName,
                 photoURL: 'assets/images/avatars/Abbott.jpg',
                 email: email,
                 settings: {},

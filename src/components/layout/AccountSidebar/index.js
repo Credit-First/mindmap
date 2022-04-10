@@ -99,7 +99,7 @@ export default function AccountSidebar(props) {
     const [open, setOpen] = React.useState(true);
 
     const selectAuth = useSelector(selectAuthItem('currentUser'));
-    const currentUser = selectAuth.data;
+    const currentUser = selectAuth;
 
     const navigate = useNavigate();
     const matches = useMediaQuery('(min-width:800px)');
@@ -176,7 +176,7 @@ export default function AccountSidebar(props) {
                         <Avatar style={{
                             width: '130px', height: '130px', ...(!open && { width: '45px', height: '45px' }), mt: 2, border: '5px double grey', '& img': { borderRadius: '100%' },
                         }} src={currentUser.photoURL} />
-                        <div style={{ marginTop: '30px', fontSize: '17px', ...(!open && { display: 'none' }) }} >{currentUser.displayName}</div>
+                        <div style={{ marginTop: '30px', fontSize: '17px', ...(!open && { display: 'none' }) }} >{currentUser.username}</div>
                     </div>
                 </DrawerHeader>
                 <AccountSideBarList open={open} />

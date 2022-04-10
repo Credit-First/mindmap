@@ -6,6 +6,7 @@ import {
 import DropTarget from "./DropTarget";
 import { styled } from '@material-ui/styles';
 import FolderOpenOutlinedIcon from '@material-ui/icons/FolderOpenOutlined';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { useDispatch } from "react-redux";
 import { actionInsertItemsToFolder } from "store/actions";
@@ -13,10 +14,10 @@ import { actionInsertItemsToFolder } from "store/actions";
 const DIV = styled('div')(({ theme, active }) => ({
     backgroundColor: 'rgb(10 10 10 / 2%)',
     cursor: 'pointer',
-    padding: '10px 20px',
     borderRadius: 10,
     display: 'flex',
     overflow: 'hidden',
+    alignitems: 'center',
     justifyContent: 'space-between',
     transition: theme.transitions.create('all', {
         easing: theme.transitions.easing.sharp,
@@ -67,17 +68,24 @@ const DIV = styled('div')(({ theme, active }) => ({
         display: 'flex',
         flex: 1,
         justifyContent: 'flex-start',
-        alignItems: 'center'
+        alignItems: 'center',
+        padding: 10,
+    },
+    '& .action': {
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        padding: 10,
     }
 }))
 
 export default (props) => {
     const dispatch = useDispatch();
 
-    const { currentFolderTitle, title, moveType = '', onClick } = props;
+    const { currentFolderName, id, name, moveType = '', onClick, onDelete } = props;
 
     const itemDropped = item => {
-        dispatch(actionInsertItemsToFolder(item, title, currentFolderTitle, moveType))
+        // dispatch(actionInsertItemsToFolder(item, name, currentFolderName, moveType))
     }
     const [checked, setChecked] = React.useState({
         active: false,
@@ -85,22 +93,26 @@ export default (props) => {
     const handelCheckButton = (event) => {
         setChecked({ ...checked, [event.target.name]: event.target.checked });
     }
-
     const { active } = checked;
 
     return (
-        <DropTarget onItemDropped={itemDropped} dropEffect="link" >
-            <Tooltip title={title}>
-                <DIV active={active ? 1 : 0}>
-                    <div className='text' onClick={() => onClick(title)}>
-                        <div className='icon'>
-                            {moveType === 'BACK' ? <ArrowBackIcon /> : <FolderOpenOutlinedIcon />}
+            <DropTarget onItemDropped={itemDropped} dropEffect="link" >
+                <Tooltip title={name || moveType}>
+                    <DIV active={active ? 1 : 0}>
+                        <div className='text' onClick={() => onClick(id)}>
+                            <div className='icon'>
+                                {moveType === 'BACK' ? <ArrowBackIcon /> : <FolderOpenOutlinedIcon />}
+                            </div>
+                            <div style={{ marginLeft: 5, fontSize: 17 }}>{moveType !== 'BACK' && name}</div>
                         </div>
-                        <div style={{ marginLeft: 10, fontSize: 20 }}>{ moveType !== 'BACK' && title}</div>
-                    </div>
-                    {moveType !== 'BACK' && <Checkbox className='active' color='primary' checked={active} onChange={handelCheckButton} name='active' />}
-                </DIV>
-            </Tooltip>
-        </DropTarget>
+                        {moveType !== 'BACK' && (
+                            <div className='action'>
+                                <Checkbox className='active' color='primary' checked={active} onChange={handelCheckButton} name='active' />
+                                <DeleteOutlineIcon onClick={() => onDelete(id)} />
+                            </div>
+                        )}
+                    </DIV>
+                </Tooltip>
+            </DropTarget>
     );
 };

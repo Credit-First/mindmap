@@ -19,10 +19,30 @@ import CreateNewFolderIcon from '@material-ui/icons/CreateNewFolder';
 import InputIcon from '@material-ui/icons/Input';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
-function CustomizedMenus(props) {
-    const { onNewFolder } = props;
+const useStyles = makeStyles((theme) => ({
+    Button: {
+        textAlign: 'center',
+        fontSize: '20px',
+        '&:hover': {
+            boxShadow: `0px 9px 20px -4px ${theme.palette.primary.dark}`,
+        },
+        boxShadow: 'none',
+        borderRadius: '15px',
+        padding: 0,
+        margin: 0,
+        flexGrow: 1,
+        flexShrink: 1,
+        height: '100px',
+        width: '100%',
+    }
+}));
 
+function CustomizedMenus(props) {
+    const { onNewFolder, onNewMap } = props;
+    const navigate = useNavigate();
+    const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
+
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -32,29 +52,14 @@ function CustomizedMenus(props) {
         setAnchorEl(null);
     };
 
+    const handleNewMap = () => {
+        handleClose();
+        onNewMap();
+    }
     const handleNewFolder = () => {
         handleClose();
         onNewFolder();
     }
-    const useStyles = makeStyles((theme) => ({
-        Button: {
-            textAlign: 'center',
-            fontSize: '20px',
-            '&:hover': {
-                boxShadow: `0px 9px 20px -4px ${theme.palette.primary.dark}`,
-            },
-            boxShadow: 'none',
-            borderRadius: '15px',
-            padding: 0,
-            margin: 0,
-            flexGrow: 1,
-            flexShrink: 1,
-            height: '100px',
-            width: '100%',
-        }
-    }));
-    const navigate = useNavigate();
-    const classes = useStyles();
     return (
         <div>
             <Button
@@ -83,7 +88,7 @@ function CustomizedMenus(props) {
                     horizontal: 'left',
                 }}
             >
-                <MenuItem onClick={() => navigate('/mindmap')}>
+                <MenuItem onClick={handleNewMap}>
                     <ListItemIcon>
                         <EditIcon />
                     </ListItemIcon>
@@ -176,8 +181,6 @@ function MoreMenu() {
                         },
                     },
                 }}
-                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
                 <MenuItem >
                     <ListItemText primary='Open' />
@@ -202,4 +205,4 @@ function MoreMenu() {
     );
 }
 
-export { CustomizedMenus,  MoreMenu }
+export { CustomizedMenus, MoreMenu }

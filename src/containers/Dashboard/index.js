@@ -3,9 +3,16 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
     Box,
     Grid,
-    Checkbox,
+    Button,
+    TextField,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle
 } from '@material-ui/core';
-import { makeStyles, styled } from '@material-ui/styles';
+
+import { makeStyles } from '@material-ui/styles';
 import classNames from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 import Explorer from './Explorer';
@@ -17,7 +24,8 @@ import { Modal, UpgradeModal } from './Modal';
 import { CustomizedMenus, MoreMenu } from './Menu';
 import style from './style';
 import { actionInsertFolder } from 'store/actions';
-import { selectSortType, selectUpgradeType, selectFolder } from 'store/selectors';
+import { selectSortType, selectUpgradeType, selectCurrentFolderId, selectAuth } from 'store/selectors';
+import { actionSelectMap } from 'store/actions';
 
 const useStyles = makeStyles(style);
 
@@ -32,8 +40,8 @@ const Dashboard = () => {
     const [upgrade, setUpgrade] = React.useState(false);
     const sortType = useSelector(selectSortType);
     const upgradeState = useSelector(selectUpgradeType);
-    const { title } = useSelector(selectFolder);
-
+    const currentFolderId = useSelector(selectCurrentFolderId);
+    const user = useSelector(selectAuth);
     const handleDisplay = (type) => () => {
         setLoading(true);
         setUpgrade(false);
@@ -44,8 +52,17 @@ const Dashboard = () => {
         }, 1000);
     }
     const onNewFolder = () => {
-        dispatch(actionInsertFolder('NewFolder', title));
+        setFolderTitleOpen(true);
     }
+    const insertFolder = () => {
+        dispatch(actionInsertFolder('NewFolder', '', user.id, currentFolderId));
+        setFolderTitleOpen(false);
+    }
+    const onNewMap = () => {
+        dispatch(actionSelectMap(null));
+        navigate('/mindmap');
+    }
+    const [folderTitleOpen, setFolderTitleOpen] = React.useState(false);
 
     return (
         <Box component="main" className={classNames(classes.root, '')}>
@@ -58,7 +75,7 @@ const Dashboard = () => {
                         <Grid container spacing={1} style={{ cursor: 'pointer' }}>
                             <Grid item xs={12} xl={6} sm={3} md={2}>
                                 <div className={classNames(classes.Item, '')}>
-                                    <CustomizedMenus onNewFolder={onNewFolder}/>
+                                    <CustomizedMenus onNewFolder={onNewFolder} onNewMap={onNewMap} />
                                 </div>
                             </Grid>
                             <Grid item xs={12} xl={6} sm={3} md={2} onClick={handleDisplay('mindmap')}>
@@ -151,7 +168,7 @@ const Dashboard = () => {
                         </Grid>
                     )
                 }
-                
+
                 {
                     currentPath == '/dashboard' && (
                         sortType === 'grid' ? (
@@ -215,6 +232,27 @@ const Dashboard = () => {
                     <UpgradeDiv />
                 )
             }
+            <Dialog open={folderTitleOpen} onClose={() => setFolderTitleOpen(false)} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">Folder Title</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="title"
+                        label="Folder Title"
+                        type="text"
+                        fullWidth
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setFolderTitleOpen(false)} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={insertFolder} color="primary">
+                        Create Folder
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     )
 }

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   Box,
   Typography,
@@ -7,8 +7,9 @@ import {
   Button,
   Avatar
 } from '@material-ui/core';
-import { selectAuthItem } from 'store/selectors';
+import { selectAuth } from 'store/selectors';
 import { makeStyles } from '@material-ui/styles';
+import { actionUpdateUser } from "store/actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,8 +19,28 @@ const useStyles = makeStyles((theme) => ({
 
 export default function General() {
   const classes = useStyles();
-  const selectAuth = useSelector(selectAuthItem('currentUser'));
-  const currentUser = selectAuth.data;
+  const dispatch = useDispatch();
+  const currentUser = useSelector(selectAuth);
+
+  const [userData, setUserData] = React.useState({
+    first_ame: '',
+    last_name: '',
+    username:'',
+  })
+
+  const handleChange = (type) => (event) => {
+    setUserData(state => ({...state, [type]: event.target.value}))
+  }
+
+  const handleSave = () => {
+    dispatch(actionUpdateUser(userData))
+  }
+
+  React.useEffect(() => {
+    if( currentUser ) {
+      setUserData(currentUser)
+    }
+  }, [currentUser])
 
   return (
     <div className={classes.root}>
@@ -28,10 +49,10 @@ export default function General() {
       </Typography>
       <Box style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', paddingTop: '20px' }}>
         <Box style={{ flex: 2 / 3, display: 'flex', flexDirection: 'column', width: '60%' }}>
-          <TextField id="name" label="Name" variant="outlined" style={{ margin: '10px' }} />
-          <TextField id="website" label="Website" variant="outlined" style={{ margin: '10px' }} />
-          <TextField id="description" label="Description" variant="outlined" style={{ margin: '10px' }} />
-          <Button variant="contained" color='primary' style={{ margin: '20px', textAlign: 'center' }}>Save Change</Button>
+          <TextField id="first_name" label="First Name" variant="outlined" style={{ margin: '10px' }} value={userData.first_name} onChange={handleChange('first_name')}/>
+          <TextField id="last_name" label="Last Name" variant="outlined" style={{ margin: '10px' }} value={userData.last_name} onChange={handleChange('last_name')} />
+          <TextField id="username" label="UserName" variant="outlined" style={{ margin: '10px' }} value={userData.username} onChange={handleChange('username')} />
+          <Button variant="contained" color='primary' style={{ margin: '20px', textAlign: 'center' }} onClick={handleSave}>Save Change</Button>
         </Box>
         <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '40%' }}>
           <Avatar style={{ width: '130px', height: '130px', border: '5px double grey', '& img': { borderRadius: '100%' } }} src={currentUser.photoURL} />

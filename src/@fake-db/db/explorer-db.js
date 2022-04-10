@@ -44,6 +44,7 @@ let explorerMap = [
         title: 'New Mind Map',
         duration: 5,
         img: '/assets/photo/background1.png',
+        json: '',
         members: 10,
         modified: '2022-01-20'
     },
@@ -52,6 +53,7 @@ let explorerMap = [
         title: 'First Mind Map',
         duration: 5,
         img: '/assets/photo/background2.png',
+        json: '',
         members: 10,
         modified: '2022-01-20'
     },
@@ -60,6 +62,7 @@ let explorerMap = [
         title: 'Second Mind Map',
         duration: 3,
         img: '/assets/photo/background3.png',
+        json: '',
         members: 10,
         modified: '2022-01-20'
     },
@@ -68,6 +71,7 @@ let explorerMap = [
         title: 'Third Mind Map',
         duration: 6,
         img: '/assets/photo/background4.png',
+        json: '',
         members: 10,
         modified: '2022-01-20'
     },
@@ -76,6 +80,7 @@ let explorerMap = [
         title: 'Fourth Mind Map',
         duration: 2,
         img: '/assets/photo/background5.png',
+        json: '',
         members: 10,
         modified: '2022-01-20'
     },
@@ -84,6 +89,7 @@ let explorerMap = [
         title: 'Fifth Mind Map',
         duration: 5,
         img: '/assets/photo/background6.png',
+        json: '',
         members: 10,
         modified: '2022-01-20'
     },
@@ -92,6 +98,7 @@ let explorerMap = [
         title: 'Sixth Mind Map',
         duration: 5,
         img: '/assets/photo/background.png',
+        json: '',
         members: 10,
         modified: '2022-01-20'
     },
@@ -100,6 +107,7 @@ let explorerMap = [
         title: 'Fifth Mind Map',
         duration: 5,
         img: '/assets/photo/background4.png',
+        json: '',
         members: 10,
         modified: '2022-01-20'
     },
@@ -108,6 +116,7 @@ let explorerMap = [
         title: 'Sixth Mind Map',
         duration: 5,
         img: '/assets/photo/background2.png',
+        json: '',
         members: 10,
         modified: '2022-01-20'
     }
@@ -255,5 +264,26 @@ mock.onPost('/api/explorer/createFolder').reply((config) => {
         folder: currentfolder
     };
 
+    return [200, response];
+});
+mock.onPost('/api/v1/mindmap/').reply((config) => {
+    const data = JSON.parse(config.data);
+    let { userName, folderTitle = 'All', title, json } = data.user;
+    
+    const createMap = {
+        folderTitle: folderTitle,
+        title: title,
+        duration: 5,
+        img: '/assets/photo/background1.png',
+        json: '',
+        members: 10,
+        modified: '2022-01-20',
+        userName: userName,
+        json: json
+    };
+    explorerMap.push(createMap);
+    const response = {
+        mapList: explorerMap
+    };
     return [200, response];
 });

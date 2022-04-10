@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from '@axios';
 import { Emitter } from 'services/Emitter';
 
 class explorerService extends Emitter {
@@ -8,29 +8,38 @@ class explorerService extends Emitter {
     }
 
     setInterceptors = () => {
+        axios.interceptors.request.use(
+            (config) => {
+                config.headers['Authorization'] = 'Bearer ' + this.getAccessToken();
+                console.log(config)
+                return config;
+            }, (error) => {
+                console.log("Failed");
+                return Promise.reject(error);
+            });
+
         axios.interceptors.response.use(response => {
             return response;
         }, err => {
+            console.log(err)
             if (err.response?.status === 401 && err.config && !err.config.__isRetryRequest) {
+                // if you ever get an unauthorized response, logout the user
+                this.emit("onAutoLogout", "Invalid access_token");
+
                 this.setSession(null);
             }
         });
     };
 
-    getFolder = (title, type) => {
+
+    getFolder = () => {
         return new Promise((resolve, reject) => {
-            axios.get('/api/explorer/folder', {
-                data: {
-                    title,
-                    type
-                }
+            axios.get('/api/v1/folders', {
             }).then(response => {
-                if ( response.data.folder )
-                {
-                    resolve(response.data.folder);
+                if (response.data) {
+                    resolve(response.data);
                 }
-                else
-                {
+                else {
                     reject(response.data.error);
                 }
             });
@@ -39,70 +48,114 @@ class explorerService extends Emitter {
 
     getMap = (folderTitle) => {
         return new Promise((resolve, reject) => {
-            axios.get('/api/explorer/mapList', {
+            axios.get('/api/v1/mind_maps', {
                 data: {
                     folderTitle,
                 }
             }).then(response => {
-                if ( response.data.mapList )
-                {
-                    resolve(response.data.mapList);
+                if (response.data) {
+                    resolve(response.data);
                 }
-                else
-                {
+                else {
                     reject(response.data.error);
                 }
             });
         });
     };
 
-    createFolder = (createTitle, currentFolderTitle) => {
+    deleteFolder = (folderId) => {
         return new Promise((resolve, reject) => {
-            axios.post('/api/explorer/createFolder', {
-                createTitle,
-                currentFolderTitle, 
-            }).then(response => {
-                if ( response.data.folder )
-                {
-                    resolve(response.data.folder);
+            axios.delete('/api/v1/mind_maps/' + folderId)
+            .then(response => {
+                if (response.status == 'success') {
+                    resolve();
                 }
-                else
-                {
-                    reject(response.data.error);
+                else {
+                    reject(response.message);
                 }
             });
         });
     };
-
-    updateMap = (mapTitle, folderTitle, currentFolderTitle, moveType) => {
+    createFolder = (name, description, user_id, parent_folder_id) => {
         return new Promise((resolve, reject) => {
-            axios.post('/api/explorer/updateMap', {
-                mapTitle,
-                folderTitle,
-                currentFolderTitle, 
-                moveType
+            axios.post('/api/v1/folders', {
+                name,
+                description,
+                user_id,
+                parent_folder_id
             }).then(response => {
-                if ( response.data.mapList )
-                {
-                    resolve(response.data.mapList);
+                if (response.data) {
+                    resolve(response.data);
                 }
-                else
-                {
+                else {
                     reject(response.data.error);
                 }
             });
         });
     };
-
-    setSession = access_token => {
-        if (access_token) {
-            localStorage.setItem('jwt_access_token', access_token);
-            axios.defaults.headers.common['Authorization'] = 'Bearer ' + access_token;
-        }
-        else {
-            localStorage.removeItem('jwt_access_token');
-            delete axios.defaults.headers.common['Authorization'];
-        }
+    deleteFolder = (folderId) => {
+        return new Promise((resolve, reject) => {
+            axios.delete('/api/v1/folders/' + folderId)
+                .then(response => {
+                    if (response.data.status == 'success') {
+                        resolve();
+                    }
+                    else {
+                        reject(response.message);
+                    }
+                });
+        });
+    };
+    deleteMap = (mapId) => {
+        return new Promise((resolve, reject) => {
+            axios.delete('/api/v1/mind_maps/' + mapId)
+                .then(response => {
+                    if (response.data.status == 'success') {
+                        resolve();
+                    }
+                    else {
+                        reject(response.message);
+                    }
+                });
+        });
+    };
+    updateMap = ({ id, name, map, user_id, folder_id }) => {
+        return new Promise((resolve, reject) => {
+            axios.put('/api/v1/mind_maps/' + id, {
+                id,
+                name,
+                map,
+                user_id,
+                folder_id
+            }).then(response => {
+                if (response.data) {
+                    resolve(response.data);
+                }
+                else {
+                    reject(response.data.error);
+                }
+            });
+        });
+    };
+    createMap = ({ name, map, user_id, folder_id }) => {
+        return new Promise((resolve, reject) => {
+            axios.post('/api/v1/mind_maps', {
+                name,
+                map,
+                user_id,
+                folder_id
+            }).then(response => {
+                if (response.data) {
+                    resolve(response.data);
+                }
+                else {
+                    reject(response.data.error);
+                }
+            });
+        });
+    };
+    getAccessToken = () => {
+        return window.localStorage.getItem('jwt_access_token');
     };
 }
 

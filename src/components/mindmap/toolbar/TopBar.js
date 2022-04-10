@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -53,7 +53,9 @@ import { FOCUS_MODE_SEARCH } from "@blink-mind/plugins";
 import { DiagramLayoutType } from "@blink-mind/core";
 
 import { actionLogout } from 'store/actions';
-import { selectAuthItem } from 'store/selectors';
+import { selectAuthItem, selectCurrentFolderName, selectCurrentFolderId, selectCurrentMap } from 'store/selectors';
+import { actionCreateMap } from 'store/actions';
+import { actionUpdateMap } from 'store/actions';
 
 const styles = {
   root: {
@@ -78,15 +80,19 @@ IconBtnRaw.propTypes = {
 const IconBtn = withStyles(styles)(IconBtnRaw);
 
 export default function TopBar(props) {
+  const { state } = useLocation();
+
+  const selectAuth = useSelector(selectAuthItem('currentUser'));
+  const currentMap = useSelector(selectCurrentMap);
+  const selectfolderName = useSelector(selectCurrentFolderName);
+  const selectfolderId = useSelector(selectCurrentFolderId);
+  const dispatch = useDispatch();
+  const currentUser = selectAuth;
   const navigate = useNavigate();
   const matches = useMediaQuery('(min-width:900px)');
   const [match, setMatch] = React.useState(matches);
-  React.useEffect(() => {
-    setMatch(matches);
-  }, [matches]);
 
   const { diagram, onClickUndo, onClickRedo } = props;
-
 
   const onClickAddChild = e => {
     const { diagram } = props;
@@ -100,7 +106,7 @@ export default function TopBar(props) {
     const { diagram } = props;
     const diagramProps = diagram.getDiagramProps();
     const { controller } = diagramProps;
-  
+
     browserOpenFile(".json,.blinkmind,.bm").then(txt => {
       let obj = JSON.parse(txt);
       let model = controller.run("deserializeModel", { controller, obj });
@@ -116,7 +122,6 @@ export default function TopBar(props) {
 
     const json = controller.run("serializeModel", diagramProps);
     const jsonStr = JSON.stringify(json);
-
     const url = `data:text/plain,${encodeURIComponent(jsonStr)}`;
     const title = controller.run("getTopicTitle", {
       ...diagramProps,
@@ -125,10 +130,48 @@ export default function TopBar(props) {
     downloadFile(url, `${title}.blinkmind`);
   };
 
+  const handleSaveData = e => {
+    const { diagram } = props;
+    const diagramProps = diagram.getDiagramProps();
+    const { controller, model } = diagramProps;
+
+    const json = controller.run("serializeModel", diagramProps);
+    const jsonStr = JSON.stringify(json);
+    // const url = `data:text/plain,${encodeURIComponent(jsonStr)}`;
+    const title = controller.run("getTopicTitle", {
+      ...diagramProps,
+      topicKey: model.rootTopicKey
+    });
+
+
+    if (currentMap) {
+      const mind_map = {
+        folder_id: currentMap.folder_id,
+        name: title,
+        description: '',
+        cover_image: '',
+        map: jsonStr,
+        user_id: currentUser.id,
+        id: currentMap.id
+      }
+      dispatch(actionUpdateMap(mind_map))
+    } else {
+      const mind_map = {
+        folder_id: selectfolderId,
+        name: title,
+        description: '',
+        cover_image: '',
+        map: jsonStr,
+        user_id: currentUser.id
+      }
+      dispatch(actionCreateMap(mind_map));
+    }
+  };
+
   const onClickSearch = e => {
-  const { diagram } = props;
-  const diagramProps = diagram.getDiagramProps();
-  const { controller } = diagramProps;
+    const { diagram } = props;
+    const diagramProps = diagram.getDiagramProps();
+    const { controller } = diagramProps;
 
     controller.run("operation", {
       ...diagramProps,
@@ -136,6 +179,23 @@ export default function TopBar(props) {
       focusMode: FOCUS_MODE_SEARCH
     });
   };
+
+  React.useEffect(() => {
+    setMatch(matches);
+  }, [matches]);
+
+  React.useEffect(() => {
+    if (currentMap) {
+      const { diagram } = props;
+      const diagramProps = diagram.getDiagramProps();
+      const { controller } = diagramProps;
+
+      let obj = JSON.parse(currentMap.map);
+      let model = controller.run("deserializeModel", { controller, obj });
+      diagram.openNewModel(model);
+    }
+  }, [currentMap]);
+
   return (
     <div style={{ display: 'flex', ...(!match && { flexDirection: 'column' }), justifyContent: 'space-between', margin: '10px 20px', }}>
       <Box component="div" style={{ backgroundColor: 'white', flexGrow: 0, padding: '4px', ...(!matches && { marginBottom: '10px ' }), borderRadius: '40px', display: 'flex', alignContent: 'center', justifyContent: 'space-around', boxShadow: 'rgb(185 185 185) 0px 0px 9px 0px' }}>
@@ -152,14 +212,17 @@ export default function TopBar(props) {
         <Button variant="contained" color='primary' startIcon={<StarOutlineIcon />} style={{ borderRadius: '40px', boxShadow: 'none' }}>Uprade Now</Button>
       </Box>
       <Box style={{ display: 'flex', justifyContent: 'space-around', alignContent: 'center' }}>
-        <IconBtn title='Add'  onClick={onClickAddChild} style={{ margin: '3px', marginRight: '10px', backgroundColor: '#ffa000', color: 'white', boxShadow: 'rgb(185 185 185) 0px 0px 9px 0px' }}>
-          <AddIcon/>
+        <IconBtn title='Add' onClick={onClickAddChild} style={{ margin: '3px', marginRight: '10px', backgroundColor: '#ffa000', color: 'white', boxShadow: 'rgb(185 185 185) 0px 0px 9px 0px' }}>
+          <AddIcon />
         </IconBtn>
         <Box component="div" style={{ flex: 1, backgroundColor: 'white', padding: '4px', borderRadius: '40px', display: 'flex', alignContent: 'center', justifyContent: 'space-around', boxShadow: 'rgb(185 185 185) 0px 0px 9px 0px' }}>
           <IconBtn title='Open folder' onClick={onClickOpenFile} >
             <FolderOutlinedIcon />
           </IconBtn>
           <IconBtn title='Export Json file' onClick={onClickExportJson}>
+            <FileCopyOutlinedIcon />
+          </IconBtn>
+          <IconBtn title='Save Data' onClick={handleSaveData}>
             <FileCopyOutlinedIcon />
           </IconBtn>
           <LayoutMenu title='Layout setting' diagram={diagram} />
@@ -210,11 +273,9 @@ function ThemeMenu(props) {
     <React.Fragment>
       <Box style={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
         <IconBtn
-          aria-controls="theme-menu"
           aria-haspopup="true"
           onClick={handleClick}
           aria-controls={open ? 'map-menu' : undefined}
-          aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
           variant='text'
         >
@@ -276,11 +337,9 @@ function LayoutMenu(props) {
     <React.Fragment>
       <Box style={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
         <IconBtn
-          aria-controls="layout-menu"
           aria-haspopup="true"
           onClick={handleClick}
           aria-controls={open ? 'map-menu' : undefined}
-          aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
           variant='text'
         >
@@ -314,7 +373,7 @@ function LayoutMenu(props) {
 }
 function AccountMenu() {
   const selectAuth = useSelector(selectAuthItem('currentUser'));
-  const currentUser = selectAuth.data;
+  const currentUser = selectAuth;
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -332,7 +391,7 @@ function AccountMenu() {
   return (
     <React.Fragment>
       <Box style={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        <Tooltip title={currentUser.displayName}>
+        <Tooltip title={currentUser.username}>
           <IconButton
             onClick={handleClick}
             size="small"
@@ -341,7 +400,7 @@ function AccountMenu() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <Avatar style={{ width: 32, height: 32 }} alt={currentUser.displayName} src={currentUser.photoURL}></Avatar>
+            <Avatar style={{ width: 32, height: 32 }} alt={currentUser.username} src={currentUser.photoURL}></Avatar>
           </IconButton>
         </Tooltip>
       </Box>
@@ -349,12 +408,12 @@ function AccountMenu() {
         anchorEl={anchorEl}
         getContentAnchorEl={null}
         anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right',
+          vertical: 'bottom',
+          horizontal: 'right',
         }}
         transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
+          vertical: 'top',
+          horizontal: 'right',
         }}
         id="account-menu"
         open={open}
@@ -380,12 +439,10 @@ function AccountMenu() {
             },
           },
         }}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Avatar style={{ marginTop: '10px', width: '80px', height: '80px', border: '1px solid grey', '& img': { borderRadius: '100%' } }} src={currentUser.photoURL} />
-          <div style={{ margin: '15px', fontSize: '20px' }}>{currentUser.displayName}</div>
+          <div style={{ margin: '15px', fontSize: '20px' }}>{currentUser.username}</div>
           <div style={{
             padding: '0px 20px',
             width: '250px',
@@ -459,13 +516,12 @@ function MapMenu() {
           <Button
             onClick={handleClick}
             size="small"
-            style={{ ml: 2 }}
             aria-controls={open ? 'map-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
             variant='text'
             color="primary"
-            style={{ color: 'black' }}
+            style={{ color: 'black', ml: 2 }}
             endIcon={<KeyboardArrowDownIcon />}
           >
             My New Mind Map
@@ -511,7 +567,7 @@ function MapMenu() {
         <MenuItem disabled>
           Recent Maps
         </MenuItem>
-        <MenuItem onClick={()=>navigate('/')}>
+        <MenuItem onClick={() => navigate('/')}>
           My New Mind Map
         </MenuItem>
         <MenuItem >

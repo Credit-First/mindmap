@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from 'react-router-dom';
 import {
     Grid,
     Checkbox,
@@ -8,9 +9,10 @@ import {
 import Drag from "./Drag";
 import { styled } from '@material-ui/styles';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import LinkIcon from '@material-ui/icons/Link';
 import { useDispatch, useSelector } from "react-redux";
-import { actionGetMap } from "store/actions";
+import { actionGetMap, actionSelectMap } from "store/actions";
 import { selectMapList } from "store/selectors";
 
 function MapItem(props) {
@@ -26,6 +28,13 @@ function MapItem(props) {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
         }),
+        '& .action-btn': {
+            display:'flex',
+            position: 'absolute',
+            width: '100%',
+            justifyContent: 'flex-end',
+            padding: 10
+        },
         '& .active': {
             position: 'absolute',
             top: 0,
@@ -88,24 +97,26 @@ function MapItem(props) {
         }
     }));
 
-    const { title, duration, img } = props;
-    const [checked, setChecked] = React.useState({
-        active: false,
-    });
-    const handelCheckButton = (event) => {
-        setChecked({ ...checked, [event.target.name]: event.target.checked });
-    }
+    const { id, name, duration, img, created_at, onDelete, onClick } = props;
+    const [checked, setChecked] = React.useState(false);
 
-    const { active } = checked;
+    const handelCheckButton = (event) => {
+        setChecked(!checked);
+    }
+    const image = '/assets/photo/background.png';
 
     return (
-        <Item active={active ? 1 : 0}>
-            <Checkbox className='active' color='primary' checked={active} onChange={handelCheckButton} name='active' />
-            <div className='thumb_img' style={{height: '180px', backgroundRepeat: 'round', backgroundImage: `url(${img})`}}>
+        <Item active={checked ? 1 : 0}>
+            <div className="action-btn">
+                <Checkbox className='active' color='primary' checked={checked} onChange={handelCheckButton} name='active' />
+                <DeleteOutlineIcon onClick={() => onDelete(id)} />
+            </div>
+            <div className='thumb_img' onClick={() => onClick(id)} style={{ height: '180px', backgroundRepeat: 'round', backgroundImage: `url(${image})` }}>
             </div>
             <div className='detail'>
-                <div className='title'>{title}</div>
+                <div className='title'>{name}</div>
                 <div className='duration'>{duration}days</div>
+                <div className='duration'>{created_at.slice(0, 19)}</div>
                 <div className='btn-group'>
                     <Button
                         className='share'
@@ -122,22 +133,30 @@ function MapItem(props) {
     )
 }
 export default (props) => {
-    const { folderTitle } = props;
+    const { folderId, onDeleteMap } = props;
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const mapList = useSelector(selectMapList);
 
-    React.useEffect(() => {
-        folderTitle && dispatch(actionGetMap(folderTitle))
-    }, [folderTitle]);
+    const image = '/assets/photo/background.png';
 
-    if(mapList.length > 0) {
+    const handleViewMap = (_id) => () => {
+        dispatch(actionSelectMap(_id));
+        navigate('/mindmap');
+    }
+
+    React.useEffect(() => {
+        dispatch(actionGetMap(folderId))
+    }, [folderId]);
+
+    if (mapList.length > 0) {
         return (
-            <Grid container spacing={3} style={{ cursor: 'pointer' }} style={{ marginTop: 10 }}>
+            <Grid container spacing={3} style={{ cursor: 'pointer', marginTop: 10 }}>
                 {
                     mapList && mapList.map((item, index) => (
-                        <Grid key={index} item xs={12} xl={6} sm={4} md={3}>
-                            <Drag dataItem={item.title} dragImage={item.img} dropEffect="link">
-                                <MapItem {...item} />
+                        <Grid key={index} item xs={12} xl={6} sm={4} md={3} >
+                            <Drag dataItem={item.name || 'unnamed'} dragImage={image} dropEffect="link">
+                                <MapItem {...item} onDelete={onDeleteMap} onClick={handleViewMap}/>
                             </Drag>
                         </Grid>
                     ))
@@ -146,6 +165,6 @@ export default (props) => {
         );
     }
     return (
-        <div>Loading...</div>
+        <div>There is no item</div>
     )
 };

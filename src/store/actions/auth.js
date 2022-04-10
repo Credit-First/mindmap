@@ -4,6 +4,8 @@ export const TYPE_SET_USER_DATA = "TYPE_SET_USER_DATA";
 export const TYPE_LOGOUT_USER = "TYPE_LOGOUT_USER";
 export const TYPE_LOGIN_ERROR = 'TYPE_LOGIN_ERROR';
 export const TYPE_LOGIN_SUCCESS = 'TYPE_LOGIN_SUCCESS';
+export const TYPE_REGISTER_ERROR = 'TYPE_REGISTER_ERROR';
+export const TYPE_REGISTER_SUCCESS = 'TYPE_REGISTER_SUCCESS';
 
 export function actionLogout() {
     return (dispatch) => {
@@ -48,6 +50,19 @@ export function actionRegister(data) {
                 });
             }
             )
+            .catch(error => {
+                return dispatch({
+                    type: TYPE_LOGIN_ERROR,
+                    error
+                });
+            });
+}
+export function actionUpdateUser(data) {
+    return (dispatch) =>
+        jwtService.updateUser(data)
+            .then((user) => {
+                return dispatch(actionSetUserData(user));
+            })
             .catch(error => {
                 return dispatch({
                     type: TYPE_LOGIN_ERROR,

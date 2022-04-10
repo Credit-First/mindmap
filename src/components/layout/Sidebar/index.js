@@ -35,11 +35,12 @@ import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import AppsIcon from '@material-ui/icons/Apps';
 import ListIcon from '@material-ui/icons/List';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 
 import SideBarList from './config';
 import { routes } from '../../../setup/routes';
 import { actionLogout, actionSetSortType, actionSetUpgradeType } from 'store/actions';
-import { selectAuthItem, selectFolder, selectUpgradeType } from 'store/selectors';
+import { selectAuthItem, selectCurrentFolderName, selectUpgradeType } from 'store/selectors';
 
 const drawerWidth = 240;
 
@@ -117,7 +118,7 @@ export default function SideBar(props) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
   const location = useLocation();
-  const { title } = useSelector(selectFolder);
+  const title = useSelector(selectCurrentFolderName);
 
   function search(routes, path) {
     for (let i = 0; i < routes.length; i++) {
@@ -255,10 +256,6 @@ function SortMenu() {
           vertical: 'bottom',
           horizontal: 'right',
         }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
         id="sort-menu"
         open={open}
         onClose={handleClose}
@@ -285,7 +282,6 @@ function SortMenu() {
           },
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         <MenuItem onClick={handleChange('grid')}>
           <ListItemIcon>
@@ -306,7 +302,7 @@ function SortMenu() {
 function AccountMenu() {
   const selectAuth = useSelector(selectAuthItem('currentUser'));
   const upgradeState = useSelector(selectUpgradeType);
-  const currentUser = selectAuth.data;
+  const currentUser = selectAuth;
   const { pathname } = useLocation();
 
   const dispatch = useDispatch();
@@ -349,6 +345,11 @@ function AccountMenu() {
             </div>
           )
         }
+        <div style={{ minWidth: 30 }} >
+          <IconButton>
+            <DeleteOutlineIcon />
+          </IconButton>
+        </div>
         <div style={{ minWidth: 30 }}>
           <SortMenu />
         </div>
@@ -360,7 +361,7 @@ function AccountMenu() {
             <NotificationsNoneIcon />
           </IconButton>
         </div>
-        <Tooltip title={currentUser.displayName}>
+        <Tooltip title={currentUser.username}>
           <IconButton
             onClick={handleClick}
             size="small"
@@ -369,7 +370,7 @@ function AccountMenu() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <Avatar style={{ width: 32, height: 32 }} alt={currentUser.displayName} src={currentUser.photoURL}></Avatar>
+            <Avatar style={{ width: 32, height: 32 }} alt={currentUser.username} src={currentUser.photoURL}></Avatar>
           </IconButton>
         </Tooltip>
       </Box>
@@ -378,10 +379,6 @@ function AccountMenu() {
         getContentAnchorEl={null}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
           horizontal: 'right',
         }}
         id="account-menu"
@@ -409,11 +406,10 @@ function AccountMenu() {
           },
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Avatar style={{ marginTop: '10px', width: '80px', height: '80px', border: '1px solid grey', '& img': { borderRadius: '100%' } }} src={currentUser.photoURL} />
-          <div style={{ margin: '15px', fontSize: '20px' }}>{currentUser.displayName}</div>
+          <div style={{ margin: '15px', fontSize: '20px' }}>{currentUser.username}</div>
           <div style={{
             padding: '0px 20px',
             width: '250px',

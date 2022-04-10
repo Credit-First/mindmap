@@ -115,6 +115,7 @@ export default function SignInSide(props) {
   const [messageInfo, setMessageInfo] = useState(undefined);
 
   const loginResult = useSelector(selectAuthItem('error'));
+  const registerSuccess = useSelector(selectAuthItem('registerSuccess'));
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
@@ -156,6 +157,12 @@ export default function SignInSide(props) {
 
   }, [loginResult])
 
+  useEffect(() => {
+    if(registerSuccess) {
+      setSnackPack((prev) => [...prev, { message: 'Success Register', key: new Date().getTime() }]);
+    }
+  }, [registerSuccess])
+  
   useEffect(() => {
     if (snackPack.length && !messageInfo) {
       // Set a new snack when we don't have an active one

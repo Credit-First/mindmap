@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import {  useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   CssBaseline,
   Box,
@@ -21,7 +21,8 @@ import { actionRegister } from 'store/actions';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectAuthItem } from 'store/selectors';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -98,14 +99,29 @@ export default function SignUp(props) {
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
+  const registerSuccess = useSelector(selectAuthItem('registerSuccess'));
+
+  useEffect(() => {
+    if (registerSuccess) {
+      navigate('/login');
+    }
+  }, [registerSuccess])
+
   const validationSchema = Yup.object().shape({
-    displayName: Yup.string()
+    firstName: Yup.string()
       .required('First Name is required'),
+    lastName: Yup.string()
+      .required('Last Name is required'),
+    userName: Yup.string()
+      .required('User Name is required'),
     email: Yup.string()
       .required('Email is required')
       .email('Email is invalid'),
     password: Yup.string()
       .min(6, 'Password must be at least 6 characters')
+      .required('Password is required'),
+    passwordConfirm: Yup.string()
+      .min(6, 'PasswordConfirm must be at least 6 characters')
       .required('Password is required'),
     acceptTerms: Yup.bool()
       .oneOf([true], 'Accept Ts & Cs is required')
@@ -123,10 +139,56 @@ export default function SignUp(props) {
   const registerLayer = (
     <form onSubmit={handleSubmit(onSubmit)} ref={formRef} style={{}}>
       <div style={{ display: 'flex', flexDirection: 'column', }}>
+        <div style={{ display: 'flex' }}>
+          <TextField
+            name="first_name"
+            label="Fisrt Name"
+            placeholder='First Name'
+            InputProps={{
+              style: {
+                borderRadius: '10px',
+                height: '50px'
+              },
+              startAdornment: (
+                <InputAdornment position="start">
+                  <PersonIcon />
+                </InputAdornment>
+              ),
+            }}
+            {...register('firstName')}
+            variant="outlined"
+            error={errors.firstName ? true : false}
+            helperText={errors.firstName?.message}
+            color='secondary'
+            style={{ marginRight: '10px' }}
+          />
+          <TextField
+            name="last_name"
+            label="Last Name"
+            placeholder='Last Name'
+            InputProps={{
+              style: {
+                borderRadius: '10px',
+                height: '50px'
+              },
+              startAdornment: (
+                <InputAdornment position="start">
+                  <PersonIcon />
+                </InputAdornment>
+              ),
+            }}
+            {...register('lastName')}
+            variant="outlined"
+            error={errors.lastName ? true : false}
+            helperText={errors.lastName?.message}
+            color='secondary'
+            style={{ marginTop: '0px' }}
+          />
+        </div>
         <TextField
-          name="name"
-          label="Name"
-          placeholder='Type your Name'
+          name="user_name"
+          label="User Name"
+          placeholder='User Name'
           InputProps={{
             style: {
               borderRadius: '10px',
@@ -138,12 +200,12 @@ export default function SignUp(props) {
               </InputAdornment>
             ),
           }}
-          {...register('displayName')}
+          {...register('userName')}
           variant="outlined"
-          error={errors.displayName ? true : false}
-          helperText={errors.displayName?.message}
+          error={errors.userName ? true : false}
+          helperText={errors.userName?.message}
           color='secondary'
-          style={{ marginTop: '0px' }}
+          style={{ marginTop: '15px' }}
         />
         <TextField
           name="email"
@@ -201,15 +263,38 @@ export default function SignUp(props) {
           color='secondary'
           style={{ marginTop: '15px' }}
         />
+        <TextField
+          name="passwordConfirm"
+          label="PasswordConfirm"
+          type={"password"}
+          placeholder='Type your PasswordConfirm'
+          InputProps={{
+            style: {
+              borderRadius: '10px',
+              height: '50px'
+            },
+            startAdornment: (
+              <InputAdornment position="start">
+                <VpnKeyIcon />
+              </InputAdornment>
+            ),
+          }}
+          {...register('passwordConfirm')}
+          variant="outlined"
+          error={errors.passwordConfirm ? true : false}
+          helperText={errors.passwordConfirm?.message}
+          color='secondary'
+          style={{ marginTop: '15px' }}
+        />
         <div style={{ marginBottom: '20px' }}>
           <div style={{ display: 'flex', flexFlow: 'column', justifyContent: 'flex-start' }}>
             <label style={{ display: 'flex' }}>
               <div style={{ marginTop: '5px', fontSize: '15px' }}>
                 <Checkbox name='acceptTerms' {...register('acceptTerms')} id='acceptTerms' style={{ inputProps: { ariaLabel: 'Checkbox demo' } }} />
                 <span>I agree to the
-                  <a>Term </a>
+                  <a href="">Term </a>
                   and
-                  <a> Privacy Poicy</a>
+                  <a href=""> Privacy Poicy</a>
                 </span>
                 <Typography className='invalid-feedback' style={{ color: 'red', textAlign: 'center', fontSize: '15px' }}>{errors.acceptTerms?.message}</Typography>
               </div>
@@ -241,8 +326,8 @@ export default function SignUp(props) {
   )
 
   return (
-      <>
-        <div component="nav" className={classes.nav}>
+    <>
+      <div component="nav" className={classes.nav}>
         <a className='logo' href='' title='Mindmeister'>
           <img src='assets/images/logo/logo.svg' alt='Mindmerster Logo' />
         </a>
@@ -250,65 +335,65 @@ export default function SignUp(props) {
           <span onClick={() => navigate('/login')} >Back</span>
         </div>
       </div>
-        <Box component='main' style={{ maxWidth: '1024px', width: '100%', margin: '0 auto 20px auto' }}>
-          <CssBaseline />
-          <Box component='main' style={{ display: 'flex', flexDirection: 'column' }}>
-            <div className='ui-message-bar'>
-              <div id='site=flash-messages'></div>
-            </div>
-            <div className='signup-wrapper' style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '50px', padding: '0 20px' }}>
-              <div className='align-items-center' style={{ width: '340px', display: 'flex', flexDirection: 'column', }}>
-                <header>
-                  <h1 style={{ textAlign: 'center', fontWeight: 700, marginTop: 0 }}>Get Started</h1>
-                </header>
-                <h2 style={{ marginBottom: '20px', marginTop: 0, textAlign: 'center', fontSize: '21px', color: "#8A9499" }}>
-                  with one of these services
-                </h2>
-                <button
-                  type='submit'
-                  style={{
-                    display: 'flex', textDecoration: 'none', padding: '11px 20px', borderRadius: '24px', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 10%)', border: '1px solid rgba(0,0,0,0.1)', backgroundColor: 'white', height: 'auto', cursor: 'pointer', fontWeight: 700, fontSize: '17px', lineHeight: '24px', color: '#00AAFF', justifyContent: 'center'
-                  }}>
-                  <img
-                    src='assets/images/logo/google_logo.svg' alt='google_logo'
-                    style={{ borderEadius: '3px', width: '24px', height: '24px', marginRight: '10px' }}
-                  />
-                  <span>Sign up with Google</span>
-                </button>
-              </div>
-              <div className='separator' style={{ position: 'relative', padding: '0 25px', ...(!matches && { backgroundColor: '#DCE2E6', height: '1px', margin: '70px 0', padding: 0, position: 'relative', textAlign: 'center', width: '100%' }) }}>
-                <div className='vertical-line' style={{ backgroundColor: '#DCE2E6', width: '1px', height: '100%', position: 'absolute', left: '50%', transform: 'translateX(-50%)', ...(!matches && { textAlign: 'center' }) }}></div>
-                <p style={{
-                  backgroundColor: '#DCE2E6',
-                  padding: '5px 10px',
-                  minWidth: '48px',
-                  borderRadius: '24px',
-                  fontSize: '24px',
-                  color: 'white',
-                  textAlign: 'center',
-                  display: 'inline-block',
-                  position: 'relative',
-                  margin: '100px 0',
-                  ...(!matches && { margin: 0, transform: 'translate(0, -50%)' })
+      <Box component='main' style={{ maxWidth: '1024px', width: '100%', margin: '0 auto 20px auto' }}>
+        <CssBaseline />
+        <Box component='main' style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className='ui-message-bar'>
+            <div id='site=flash-messages'></div>
+          </div>
+          <div className='signup-wrapper' style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '50px', padding: '0 20px' }}>
+            <div className='align-items-center' style={{ width: '340px', display: 'flex', flexDirection: 'column', }}>
+              <header>
+                <h1 style={{ textAlign: 'center', fontWeight: 700, marginTop: 0 }}>Get Started</h1>
+              </header>
+              <h2 style={{ marginBottom: '20px', marginTop: 0, textAlign: 'center', fontSize: '21px', color: "#8A9499" }}>
+                with one of these services
+              </h2>
+              <button
+                type='submit'
+                style={{
+                  display: 'flex', textDecoration: 'none', padding: '11px 20px', borderRadius: '24px', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 10%)', border: '1px solid rgba(0,0,0,0.1)', backgroundColor: 'white', height: 'auto', cursor: 'pointer', fontWeight: 700, fontSize: '17px', lineHeight: '24px', color: '#00AAFF', justifyContent: 'center'
                 }}>
-                  or
-                </p>
-              </div>
-              <div className='align-items-center' style={{ width: '340px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <img src="assets/images/logo/email.svg" alt='email' style={{ width: '60px', maxWidth: '60px', marginBottom: '10px' }} />
-                <h2 style={{
-                  textAlign: 'center', fontSize: '21px', color: "#8A9499"
-                }}>
-                  with your email address
-                </h2>
-                {registerLayer}
-              </div>
+                <img
+                  src='assets/images/logo/google_logo.svg' alt='google_logo'
+                  style={{ borderEadius: '3px', width: '24px', height: '24px', marginRight: '10px' }}
+                />
+                <span>Sign up with Google</span>
+              </button>
             </div>
-            <div className='justify-center' style={{ marginTop: '20px', marginBottom: '0px', textAlign: 'center', color: '#8A949' }}>
-              <a href='/account/login?product=1' style={{ color: '#00AAFF', textDecoration: 'none', '&:hove': {} }}>I already have an account</a>
+            <div className='separator' style={{ position: 'relative', padding: '0 25px', ...(!matches && { backgroundColor: '#DCE2E6', height: '1px', margin: '70px 0', padding: 0, position: 'relative', textAlign: 'center', width: '100%' }) }}>
+              <div className='vertical-line' style={{ backgroundColor: '#DCE2E6', width: '1px', height: '100%', position: 'absolute', left: '50%', transform: 'translateX(-50%)', ...(!matches && { textAlign: 'center' }) }}></div>
+              <p style={{
+                backgroundColor: '#DCE2E6',
+                padding: '5px 10px',
+                minWidth: '48px',
+                borderRadius: '24px',
+                fontSize: '24px',
+                color: 'white',
+                textAlign: 'center',
+                display: 'inline-block',
+                position: 'relative',
+                margin: '100px 0',
+                ...(!matches && { margin: 0, transform: 'translate(0, -50%)' })
+              }}>
+                or
+              </p>
             </div>
-          </Box>
+            <div className='align-items-center' style={{ width: '340px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <img src="assets/images/logo/email.svg" alt='email' style={{ width: '60px', maxWidth: '60px', marginBottom: '10px' }} />
+              <h2 style={{
+                textAlign: 'center', fontSize: '21px', color: "#8A9499"
+              }}>
+                with your email address
+              </h2>
+              {registerLayer}
+            </div>
+          </div>
+          <div className='justify-center' style={{ marginTop: '20px', marginBottom: '0px', textAlign: 'center', color: '#8A949' }}>
+            <a href='' style={{ color: '#00AAFF', textDecoration: 'none', '&:hove': {} }}>I already have an account</a>
+          </div>
         </Box>
-      </>
+      </Box>
+    </>
   );
 }
