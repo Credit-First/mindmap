@@ -7,9 +7,10 @@ import {
   Button,
   Avatar
 } from '@material-ui/core';
-import { selectAuth } from 'store/selectors';
+import { selectAuth, selectAuthItem } from 'store/selectors';
 import { makeStyles } from '@material-ui/styles';
 import { actionUpdateUser } from "store/actions";
+import { useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,12 +21,15 @@ const useStyles = makeStyles((theme) => ({
 export default function General() {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const currentUser = useSelector(selectAuth);
-
+  const updateSuccess = useSelector(selectAuthItem('updateSuccess'));
   const [userData, setUserData] = React.useState({
+    id: 0,
     first_ame: '',
     last_name: '',
     username:'',
+    email: ''
   })
 
   const handleChange = (type) => (event) => {
@@ -37,8 +41,14 @@ export default function General() {
   }
 
   React.useEffect(() => {
+    if(updateSuccess) {
+      console.log(updateSuccess)
+    }
+  }, [updateSuccess]);
+
+  React.useEffect(() => {
     if( currentUser ) {
-      setUserData(currentUser)
+      setUserData(currentUser);
     }
   }, [currentUser])
 

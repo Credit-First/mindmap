@@ -6,6 +6,7 @@ const initState = {
     currentUser: {},
     success: false,
     registerSuccess: false,
+    updateSuccess: false,
     error: {
         email: null,
         password: null
@@ -22,8 +23,14 @@ const auth = function (state = initState, action) {
             return { ...state, success: true }
         case Actions.TYPE_LOGIN_ERROR:
             return { ...state, success: false, error: { ...state.error, email: action.error.email, password: action.error.password } }
-        case Action.TYPE_REGISTER_SUCCESS:
-            const newstate = { ...state, registerSuccess: true };
+        case Actions.TYPE_REGISTER_SUCCESS:
+            return { ...state, registerSuccess: true };
+        case Actions.TYPE_REGISTER_ERROR:
+            return { ...state, registerSuccess: false, error: { ...state.error, email: action.error.email, password: action.error.password } }
+        case Actions.TYPE_UPDATE_SUCCESS:
+            return { ...state, updateSuccess: true };
+        case Actions.TYPE_UPDATE_ERROR:
+            return { ...state, updateSuccess: false, error: { ...state.error, email: action.error.email, password: action.error.password } }
         default:
             return state;
     }

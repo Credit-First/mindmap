@@ -118,10 +118,10 @@ export default function SignUp(props) {
       .required('Email is required')
       .email('Email is invalid'),
     password: Yup.string()
-      .min(6, 'Password must be at least 6 characters')
+      .min(8, 'Password must be at least 8 characters')
       .required('Password is required'),
     passwordConfirm: Yup.string()
-      .min(6, 'PasswordConfirm must be at least 6 characters')
+      .min(8, 'PasswordConfirm must be at least 8 characters')
       .required('Password is required'),
     acceptTerms: Yup.bool()
       .oneOf([true], 'Accept Ts & Cs is required')
@@ -133,7 +133,7 @@ export default function SignUp(props) {
   const { errors } = formState;
   function onSubmit(data) {
     dispatch(actionRegister(data));
-    return false;
+    
   }
 
   const registerLayer = (

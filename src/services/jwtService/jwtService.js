@@ -58,7 +58,6 @@ class jwtService extends Emitter {
             })
                 .then(response => {
                     if (response.data.user) {
-                        this.setSession(response.data.jwtToken);
                         resolve(response.data.user);
                     }
                     else {
@@ -110,16 +109,16 @@ class jwtService extends Emitter {
         return new Promise((resolve, reject) => {
             axios.put('/api/v1/users/', {
                 user: {
-                    first_name: data.firstName,
-                    last_name: data.lastName,
+                    id: data.id,
+                    first_name: data.first_name,
+                    last_name: data.last_name,
                     email: data.email,
-                    username: data.userName,
+                    username: data.username,
                 }
             })
                 .then(response => {
-                    if (response.data.user) {
-                        this.setSession(response.data.jwtToken);
-                        resolve(response.data.user);
+                    if (response.data) {
+                        resolve(response.data);
                     }
                     else {
                         reject(response.data.error);
