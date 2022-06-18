@@ -112,7 +112,7 @@ let authDB = {
     ]
 };
 
-mock.onGet('/api/v1/users/sign_in').reply((config) => {
+mock.onGet('/api/v1/users/sign_in').reply((config) => { 
     const data = JSON.parse(config.data);
     const { email, password } = data;
     const user = _.cloneDeep(authDB.users.find(_user => _user.data.email === email));
@@ -125,6 +125,7 @@ mock.onGet('/api/v1/users/sign_in').reply((config) => {
         delete user['password'];
 
         // const access_token = jwt.sign({ id: user.uuid }, jwtConfig.secret, { expiresIn: jwtConfig.expiresIn });
+        //
         const access_token = JSON.stringify({ id: user.uuid });
         
         const response = {
