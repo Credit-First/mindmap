@@ -51,6 +51,7 @@
 		"topology-core": "^0.2.17",
 		"topology-flow-diagram": "0.0.3",
 		"topology-sequence-diagram": "0.0.6",
+		"webpack-dev-server": "^4.9.2",
 		"yup": "^0.32.11"
 	},
 	"devDependencies": {
@@ -111,7 +112,6 @@
 		"url-loader": "2.1.0",
 		"webpack": "4.39.1",
 		"webpack-bundle-analyzer": "^3.6.0",
-		"webpack-dev-server": "3.2.1",
 		"webpack-manifest-plugin": "2.0.4",
 		"workbox-webpack-plugin": "4.3.1"
 	},
