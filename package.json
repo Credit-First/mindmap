@@ -54,6 +54,9 @@
 		"topology-flow-diagram": "0.0.3",
 		"topology-sequence-diagram": "0.0.6",
 		"webpack": "^4.39.1",
+		"webpack-bundle-analyzer": "^3.6.0",
+		"webpack-dev-server": "^3.2.1",
+		"webpack-manifest-plugin": "^2.0.4",
 		"yup": "^0.32.11"
 	},
 	"devDependencies": {
@@ -109,9 +112,6 @@
 		"terser-webpack-plugin": "1.4.1",
 		"ts-pnp": "1.1.2",
 		"url-loader": "2.1.0",
-		"webpack-bundle-analyzer": "^3.6.0",
-		"webpack-dev-server": "3.2.1",
-		"webpack-manifest-plugin": "2.0.4",
 		"workbox-webpack-plugin": "4.3.1"
 	},
 	"scripts": {
